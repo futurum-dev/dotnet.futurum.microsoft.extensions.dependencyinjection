@@ -21,14 +21,4 @@ public static class ModuleExtensions
 
         return services;
     }
-
-    public static IServiceCollection RegisterModule<T>(this IServiceCollection services, Func<IServiceCollection,T> factory)
-        where T : IModule
-    {
-        var module = factory(services);
-        
-        services.RegisterModule(module);
-
-        return services;
-    }
 }

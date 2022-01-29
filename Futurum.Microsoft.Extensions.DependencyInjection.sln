@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{D91E5AB1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{3BC45DF0-972E-4400-80FC-442F6B3084CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Futurum.Microsoft.Extensions.DependencyInjection.Tests", "test\Futurum.Microsoft.Extensions.DependencyInjection.Tests\Futurum.Microsoft.Extensions.DependencyInjection.Tests.csproj", "{CAF8E145-BD58-4000-96E4-51390C7407FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,5 +29,12 @@ Global
 		{6EAF9F7E-3728-450E-B53E-4B982F016023}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EAF9F7E-3728-450E-B53E-4B982F016023}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EAF9F7E-3728-450E-B53E-4B982F016023}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAF8E145-BD58-4000-96E4-51390C7407FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAF8E145-BD58-4000-96E4-51390C7407FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAF8E145-BD58-4000-96E4-51390C7407FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAF8E145-BD58-4000-96E4-51390C7407FF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CAF8E145-BD58-4000-96E4-51390C7407FF} = {3BC45DF0-972E-4400-80FC-442F6B3084CD}
 	EndGlobalSection
 EndGlobal
