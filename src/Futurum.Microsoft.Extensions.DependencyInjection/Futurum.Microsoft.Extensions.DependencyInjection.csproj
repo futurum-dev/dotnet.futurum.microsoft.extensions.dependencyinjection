@@ -9,7 +9,7 @@
     <PropertyGroup>
         <PackageId>Futurum.Microsoft.Extensions.DependencyInjection</PackageId>
         <PackageIcon>dotnet-logo.png</PackageIcon>
-        <Description>Small dotnet library, based on the concepts behind 'Railway Oriented Programming'.</Description>
+        <Description>Small dotnet library, that allows Microsoft.Extensions.DependencyInjection to work with Futurum.Core. It also add modules and startables.</Description>
         <PackageProjectUrl>https://www.futurum.dev/projects/dotnet-futurum.html</PackageProjectUrl>
         <RepositoryUrl>https://github.com/futurum-dev/dotnet.futurum.microsoft.extensions.dependencyinjection</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
