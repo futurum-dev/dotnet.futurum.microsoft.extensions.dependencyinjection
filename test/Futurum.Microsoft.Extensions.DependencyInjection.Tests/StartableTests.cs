@@ -1,6 +1,7 @@
 using Futurum.Test.Result;
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 using Xunit;
 
@@ -8,40 +9,90 @@ namespace Futurum.Microsoft.Extensions.DependencyInjection.Tests;
 
 public class StartableTests
 {
-    [Fact]
-    public async Task RegisterModule_instance()
+    public class AddStartable_with_BuildServiceProviderWithStartables
     {
-        var services = new ServiceCollection();
+        [Fact]
+        public void instance()
+        {
+            var services = new ServiceCollection();
 
-        var singletonList = new SingletonList();
-        
-        services.AddSingleton(singletonList);
+            var singletonList = new SingletonList();
 
-        services.AddStartable(new TestStartable(singletonList));
+            services.AddSingleton(singletonList);
 
-        var serviceProvider = services.BuildServiceProviderWithStartables();
+            services.AddStartable(new TestStartable(singletonList));
 
-        var result = serviceProvider.TryGetService<SingletonList>();
+            var serviceProvider = services.BuildServiceProviderWithStartables();
 
-        result.ShouldBeSuccessWithValueEquivalentTo(x => x.Numbers, Enumerable.Range(0, 10));
+            var result = serviceProvider.TryGetService<SingletonList>();
+
+            result.ShouldBeSuccessWithValueEquivalentTo(x => x.Numbers, Enumerable.Range(0, 10));
+        }
+
+        [Fact]
+        public void generic()
+        {
+            var services = new ServiceCollection();
+
+            services.AddSingleton<SingletonList>();
+
+            services.AddStartable<TestStartable>();
+
+            var serviceProvider = services.BuildServiceProviderWithStartables();
+
+            var result = serviceProvider.TryGetService<SingletonList>();
+
+            result.ShouldBeSuccessWithValueEquivalentTo(x => x.Numbers, Enumerable.Range(0, 10));
+        }
     }
 
-    [Fact]
-    public async Task RegisterModule_generic()
+    public class AddStartable_with_StartableHostedService
     {
-        var services = new ServiceCollection();
+        [Fact]
+        public async Task instance()
+        {
+            var services = new ServiceCollection();
 
-        services.AddSingleton<SingletonList>();
+            var singletonList = new SingletonList();
 
-        services.AddStartable<TestStartable>();
+            services.AddSingleton(singletonList);
 
-        var serviceProvider = services.BuildServiceProviderWithStartables();
+            services.AddStartable(new TestStartable(singletonList));
 
-        var result = serviceProvider.TryGetService<SingletonList>();
+            var serviceProvider = services.BuildServiceProvider();
 
-        result.ShouldBeSuccessWithValueEquivalentTo(x => x.Numbers, Enumerable.Range(0, 10));
+            var startableHostedService = serviceProvider.GetService<IHostedService>();
+            await startableHostedService.StartAsync(CancellationToken.None);
+
+            var result = serviceProvider.TryGetService<SingletonList>();
+
+            result.ShouldBeSuccessWithValueEquivalentTo(x => x.Numbers, Enumerable.Range(0, 10));
+
+            await startableHostedService.StopAsync(CancellationToken.None);
+        }
+
+        [Fact]
+        public async Task generic()
+        {
+            var services = new ServiceCollection();
+
+            services.AddSingleton<SingletonList>();
+
+            services.AddStartable<TestStartable>();
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            var startableHostedService = serviceProvider.GetService<IHostedService>();
+            await startableHostedService.StartAsync(CancellationToken.None);
+
+            var result = serviceProvider.TryGetService<SingletonList>();
+
+            result.ShouldBeSuccessWithValueEquivalentTo(x => x.Numbers, Enumerable.Range(0, 10));
+
+            await startableHostedService.StopAsync(CancellationToken.None);
+        }
     }
-
+    
     public class SingletonList
     {
         public List<int> Numbers { get; } = new();
