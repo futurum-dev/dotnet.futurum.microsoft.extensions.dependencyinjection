@@ -15,18 +15,21 @@ jobs:
         with:
           fetch-depth: 100
       
-      - name: Setup .NET 6
+      - name: Setup .NET 7
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 6.x
+          dotnet-version: 7.x
 
       - name: Install dependencies
         run: dotnet restore
 
+      - name: Build Generator
+        run: dotnet build ./src/Futurum.Microsoft.Extensions.DependencyInjection.Generator --configuration Release --no-restore
+
       - name: Build
         run: dotnet build --configuration Release --no-restore
       
-      - name: Test on .NET 6
+      - name: Test on .NET 7
         run: dotnet test --no-restore --verbosity normal /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
 
       - name: Publish coverage report to coveralls.io

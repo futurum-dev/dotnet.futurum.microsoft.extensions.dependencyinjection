@@ -1,3 +1,5 @@
+using FluentAssertions;
+
 using Futurum.Test.Result;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -92,7 +94,26 @@ public class StartableTests
             await startableHostedService.StopAsync(CancellationToken.None);
         }
     }
-    
+
+    [Fact]
+    public async Task StartableFunctionWrapper()
+    {
+        var services = new ServiceCollection();
+
+        services.AddSingleton<SingletonList>();
+
+        services.AddStartable(new StartableFunctionWrapper(new TestWrapperStartable().Start));
+
+        var serviceProvider = services.BuildServiceProvider();
+
+        var startableHostedService = serviceProvider.GetService<IHostedService>();
+        await startableHostedService.StartAsync(CancellationToken.None);
+
+        TestWrapperStartable.SingletonList.Numbers.Should().BeEquivalentTo(Enumerable.Range(0, 10));
+
+        await startableHostedService.StopAsync(CancellationToken.None);
+    }
+
     public class SingletonList
     {
         public List<int> Numbers { get; } = new();
@@ -119,6 +140,21 @@ public class StartableTests
             foreach (var number in numbers)
             {
                 _singletonList.Add(number);
+            }
+        }
+    }
+
+    internal class TestWrapperStartable : IStartable
+    {
+        public static readonly SingletonList SingletonList = new();
+        
+        public void Start()
+        {
+            var numbers = Enumerable.Range(0, 10);
+
+            foreach (var number in numbers)
+            {
+                SingletonList.Add(number);
             }
         }
     }

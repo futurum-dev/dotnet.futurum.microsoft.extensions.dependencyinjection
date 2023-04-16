@@ -23,6 +23,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{D89EB7
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Futurum.Microsoft.Extensions.DependencyInjection.Sample", "sample\Futurum.Microsoft.Extensions.DependencyInjection.Sample\Futurum.Microsoft.Extensions.DependencyInjection.Sample.csproj", "{062C6431-11B5-4927-90F4-FB928C59CE24}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Futurum.Microsoft.Extensions.DependencyInjection.Generator", "src\Futurum.Microsoft.Extensions.DependencyInjection.Generator\Futurum.Microsoft.Extensions.DependencyInjection.Generator.csproj", "{8D3BB258-2AE3-42D8-8FCA-53CB08EFBC66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Sample", "sample\Futurum.Microsoft.Extensions.DependencyInjection.Generator.Sample\Futurum.Microsoft.Extensions.DependencyInjection.Generator.Sample.csproj", "{0A9F5652-EF5A-45AD-86A9-29702F426944}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests", "test\Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests\Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.csproj", "{45B99B38-E5F5-47FF-88AE-BC48E7EA2616}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,9 +47,23 @@ Global
 		{062C6431-11B5-4927-90F4-FB928C59CE24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{062C6431-11B5-4927-90F4-FB928C59CE24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{062C6431-11B5-4927-90F4-FB928C59CE24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D3BB258-2AE3-42D8-8FCA-53CB08EFBC66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D3BB258-2AE3-42D8-8FCA-53CB08EFBC66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D3BB258-2AE3-42D8-8FCA-53CB08EFBC66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D3BB258-2AE3-42D8-8FCA-53CB08EFBC66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A9F5652-EF5A-45AD-86A9-29702F426944}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A9F5652-EF5A-45AD-86A9-29702F426944}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A9F5652-EF5A-45AD-86A9-29702F426944}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A9F5652-EF5A-45AD-86A9-29702F426944}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45B99B38-E5F5-47FF-88AE-BC48E7EA2616}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45B99B38-E5F5-47FF-88AE-BC48E7EA2616}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45B99B38-E5F5-47FF-88AE-BC48E7EA2616}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45B99B38-E5F5-47FF-88AE-BC48E7EA2616}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CAF8E145-BD58-4000-96E4-51390C7407FF} = {3BC45DF0-972E-4400-80FC-442F6B3084CD}
 		{062C6431-11B5-4927-90F4-FB928C59CE24} = {D89EB769-9F2C-443F-9821-012D173DA16A}
+		{0A9F5652-EF5A-45AD-86A9-29702F426944} = {D89EB769-9F2C-443F-9821-012D173DA16A}
+		{45B99B38-E5F5-47FF-88AE-BC48E7EA2616} = {3BC45DF0-972E-4400-80FC-442F6B3084CD}
 	EndGlobalSection
 EndGlobal

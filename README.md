@@ -7,6 +7,11 @@
 
 A dotnet library, that allows Microsoft.Extensions.DependencyInjection to work with Futurum.Core. It also adds support for modules and startables.
 
+- [x] Autodiscovery of DependencyInjection registrations, based on [attributes](#attribute-based-registration) and Source Generators
+- [x] Autodiscovery of DependencyInjection modules, based on [attributes](#attribute-based-module) and Source Generators
+- [x] Autodiscovery of DependencyInjection startables, based on [attributes](#attribute-based-startable) and Source Generators
+- [x] [Roslyn Analysers](#roslyn-analysers) to help build your WebApiEndpoint(s), using best practices
+
 ## TryGetService
 Try to get the service object of the specified type.
 
@@ -30,15 +35,15 @@ public class TestModule : IModule
 }
 ```
 
-### RegisterModule extension method
+### AddModule extension method
 Allows you to register a module.
 
 ```csharp
-services.RegisterModule<TestModule>();
+services.AddModule<TestModule>();
 ```
 
 ```csharp
-services.RegisterModule(new TestModule());
+services.AddModule(new TestModule());
 ```
 
 ## Startables
@@ -74,3 +79,40 @@ Creates a ServiceProvider containing services from the provided IServiceCollecti
 ```csharp
 var serviceProvider = services.BuildServiceProviderWithStartables();
 ```
+
+## Attribute based registration
+You can also register services using attributes.
+
+- RegisterAsSingleton attribute
+- RegisterAsScoped attribute
+- RegisterAsTransient attribute
+
+### DuplicateRegistrationStrategy
+- Try - Adds the new registration, if the service hasn't already been registered
+- Replace - Removes any existing registration and then adds the new registration
+- Add - Adds the new registration, irrespective of if its previously been registered
+
+**NOTE** - This defaults to *Try*
+
+### InterfaceRegistrationStrategy
+- Self - Registers the service as itself
+- ImplementedInterfaces - Registers the service as each its implemented interfaces
+- SelfWithInterfaces - Registers the service as itself and each its implemented interfaces
+
+**NOTE** - This defaults to *SelfWithInterfaces*
+
+## Attribute based module
+You can also register modules using attributes.
+
+- RegisterAsDependencyInjectionModule attribute
+
+## Attribute based startable
+You can also register modules using attributes.
+
+- RegisterAsDependencyInjectionStartable attribute
+
+## Roslyn Analysers
+- FMEDI0001 - Invalid Module Parameter
+- FMEDI0002 - Missing Module Parameter
+- FMEDI0003 - Non empty constructor found on Module
+- FMEDI0004 - Non empty constructor found on Startable
