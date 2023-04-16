@@ -13,7 +13,7 @@ try
                                           .Enrich.FromLogContext()
                                           .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss.fff} {Level:u3}] {Message:lj}{NewLine}{Exception}")
                                           .CreateBootstrapLogger();
-
+    
     Log.Information("Application starting up");
 
     var builder = Host.CreateDefaultBuilder(args);
@@ -22,7 +22,16 @@ try
                            loggerConfiguration.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss.fff} {Level:u3}] {Message:lj}{NewLine}{Exception}")
                                               .ReadFrom.Configuration(hostBuilderContext.Configuration));
 
-    builder.ConfigureServices(serviceCollection => serviceCollection.AddStartable<SampleStartable>());
+    builder.ConfigureServices(serviceCollection =>
+    {
+        serviceCollection.AddDependencyInjectionForFuturumMicrosoftExtensionsDependencyInjectionSample();
+        
+        serviceCollection.AddModule<ManualModule>();
+        
+        serviceCollection.AddStartable<ManualStartable>();
+
+        serviceCollection.AddSingleton<IService, ManualService>();
+    });
 
     var host = builder.Build();
 

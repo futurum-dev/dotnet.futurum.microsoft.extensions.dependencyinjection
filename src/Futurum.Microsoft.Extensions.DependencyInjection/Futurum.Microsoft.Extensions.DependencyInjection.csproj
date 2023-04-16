@@ -1,9 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <TargetFramework>net7.0</TargetFramework>
+        <OutputType>Library</OutputType>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <IsPackable>true</IsPackable>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -20,18 +23,22 @@
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <DocumentationFile>bin\Debug\net6.0\Futurum.Microsoft.Extensions.DependencyInjection.xml</DocumentationFile>
+      <DocumentationFile>bin\Debug\net7.0\Futurum.Microsoft.Extensions.DependencyInjection.xml</DocumentationFile>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <DocumentationFile>bin\Release\net6.0\Futurum.Microsoft.Extensions.DependencyInjection.xml</DocumentationFile>
+      <DocumentationFile>bin\Release\net7.0\Futurum.Microsoft.Extensions.DependencyInjection.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Futurum.Core" Version="1.0.15" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+      <PackageReference Include="Futurum.Core" Version="1.0.16" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
       <PackageReference Update="MinVer" Version="4.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\Futurum.Microsoft.Extensions.DependencyInjection.Generator\bin\$(Configuration)\netstandard2.0\Futurum.Microsoft.Extensions.DependencyInjection.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     </ItemGroup>
 
 </Project>

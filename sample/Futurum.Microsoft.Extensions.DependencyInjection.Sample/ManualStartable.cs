@@ -2,17 +2,17 @@
 
 namespace Futurum.Microsoft.Extensions.DependencyInjection.Sample;
 
-public class SampleStartable : IStartable
+public class ManualStartable : IStartable
 {
     private readonly ILogger _logger;
 
-    public SampleStartable(ILogger logger)
+    public ManualStartable(ILogger logger)
     {
         _logger = logger;
     }
-    
+
     public void Start()
     {
-        _logger.Information($"{nameof(SampleStartable)} started");
+        _logger.Information($"{nameof(ManualStartable)} started");
     }
 }
