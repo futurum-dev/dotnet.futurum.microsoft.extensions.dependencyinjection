@@ -14,7 +14,7 @@ public class StartableTests
     public class AddStartable_with_BuildServiceProviderWithStartables
     {
         [Fact]
-        public void instance()
+        public async Task instance()
         {
             var services = new ServiceCollection();
 
@@ -24,7 +24,7 @@ public class StartableTests
 
             services.AddStartable(new TestStartable(singletonList));
 
-            var serviceProvider = services.BuildServiceProviderWithStartables();
+            var serviceProvider = await services.BuildServiceProviderWithStartablesAsync();
 
             var result = serviceProvider.TryGetService<SingletonList>();
 
@@ -32,7 +32,7 @@ public class StartableTests
         }
 
         [Fact]
-        public void generic()
+        public async Task generic()
         {
             var services = new ServiceCollection();
 
@@ -40,7 +40,7 @@ public class StartableTests
 
             services.AddStartable<TestStartable>();
 
-            var serviceProvider = services.BuildServiceProviderWithStartables();
+            var serviceProvider = await services.BuildServiceProviderWithStartablesAsync();
 
             var result = serviceProvider.TryGetService<SingletonList>();
 
@@ -102,7 +102,7 @@ public class StartableTests
 
         services.AddSingleton<SingletonList>();
 
-        services.AddStartable(new StartableFunctionWrapper(new TestWrapperStartable().Start));
+        services.AddStartable(new StartableFunctionWrapper(new TestWrapperStartable().StartAsync));
 
         var serviceProvider = services.BuildServiceProvider();
 
@@ -133,7 +133,7 @@ public class StartableTests
             _singletonList = singletonList;
         }
 
-        public void Start()
+        public async Task StartAsync()
         {
             var numbers = Enumerable.Range(0, 10);
 
@@ -148,7 +148,7 @@ public class StartableTests
     {
         public static readonly SingletonList SingletonList = new();
         
-        public void Start()
+        public async Task StartAsync()
         {
             var numbers = Enumerable.Range(0, 10);
 

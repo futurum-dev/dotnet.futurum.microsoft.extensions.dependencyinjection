@@ -38,4 +38,20 @@ public static class DiagnosticDescriptors
         "Futurum.Microsoft.Extensions.DependencyInjection.Generator",
         DiagnosticSeverity.Error,
         true);
+
+    public static readonly DiagnosticDescriptor StartableNonAsyncMethod = new(
+        "FMEDI0005",
+        "Non async method found on Startable",
+        $"Startable method '{{0}}' is not async.{Environment.NewLine} Startable methods must be async.",
+        "Futurum.Microsoft.Extensions.DependencyInjection.Generator",
+        DiagnosticSeverity.Error,
+        true);
+
+    public static readonly DiagnosticDescriptor ModuleNonVoidReturn = new(
+        "FMEDI0006",
+        "Non void method found on Module",
+        $"Module method '{{0}}' does not return void.{Environment.NewLine} Module methods must return void.",
+        "Futurum.Microsoft.Extensions.DependencyInjection.Generator",
+        DiagnosticSeverity.Error,
+        true);
 }

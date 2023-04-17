@@ -3,7 +3,8 @@ namespace Futurum.Microsoft.Extensions.DependencyInjection.Sample;
 public static class AutomaticStaticStartable
 {
     [RegisterAsDependencyInjectionStartable]
-    public static void Start()
+    public static Task<int> Start()
     {
+        return Task.FromResult(1);
     }
 }

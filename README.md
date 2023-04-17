@@ -5,12 +5,13 @@
 [![Coverage Status](https://img.shields.io/coveralls/github/futurum-dev/dotnet.futurum.microsoft.extensions.dependencyinjection?style=for-the-badge)](https://coveralls.io/github/futurum-dev/dotnet.futurum.microsoft.extensions.dependencyinjection?branch=main)
 [![NuGet version](https://img.shields.io/nuget/v/futurum.microsoft.extensions.dependencyinjection?style=for-the-badge)](https://www.nuget.org/packages/futurum.microsoft.extensions.dependencyinjection)
 
-A dotnet library, that allows Microsoft.Extensions.DependencyInjection to work with Futurum.Core. It also adds support for modules and startables.
+A dotnet library that extends Microsoft.Extensions.DependencyInjection by adding support for [modules](#modules), [startables](#startables) and [attribute based registration](#attribute-based-registration).
 
 - [x] Autodiscovery of DependencyInjection registrations, based on [attributes](#attribute-based-registration) and Source Generators
 - [x] Autodiscovery of DependencyInjection modules, based on [attributes](#attribute-based-module) and Source Generators
 - [x] Autodiscovery of DependencyInjection startables, based on [attributes](#attribute-based-startable) and Source Generators
 - [x] [Roslyn Analysers](#roslyn-analysers) to help build your WebApiEndpoint(s), using best practices
+- [x] Integration with Futurum.Core]
 
 ## TryGetService
 Try to get the service object of the specified type.
@@ -22,7 +23,10 @@ var result = serviceProvider.TryGetService<ITestService>();
 ## Modules
 A module allows you to break up registration into logical units.
 
-### IModule interface
+Module can either be registered using *IModule* interface and *AddModule* extension method, or by using the [*RegisterAsDependencyInjectionModule*](#attribute-based-module) attribute.
+
+### IModule interface and AddModule extension method
+#### IModule interface
 Implements this interface to create a module.
 
 ```csharp
@@ -35,7 +39,7 @@ public class TestModule : IModule
 }
 ```
 
-### AddModule extension method
+#### AddModule extension method
 Allows you to register a module.
 
 ```csharp
@@ -46,23 +50,51 @@ services.AddModule<TestModule>();
 services.AddModule(new TestModule());
 ```
 
+### Attribute based module
+You can also register modules using attributes.
+
+- RegisterAsDependencyInjectionModule attribute
+
+```csharp
+public class Module
+{
+    [RegisterAsDependencyInjectionModule]
+    public void Load(IServiceCollection services)
+    {
+    }
+}
+```
+
+```csharp
+public static class Module
+{
+    [RegisterAsDependencyInjectionModule]
+    public static void Load(IServiceCollection services)
+    {
+    }
+}
+```
+
 ## Startables
 A startable is resolved at the start of the application lifecycle and is a place to perform actions as soon as the DependencyInjection container is built.
 
-### IStartable interface
+Startable can either be registered using *IStartable* interface and *AddStartable* extension method, or by using the [*RegisterAsDependencyInjectionStartable*](#attribute-based-startable) attribute.
+
+### IStartable interface and AddStartable extension method
+#### IStartable interface
 Implements this interface to create a startable.
 
 ```csharp
 public class TestStartable : IStartable
 {
-    public void Start()
+    public Task Start()
     {
         // Do something
     }
 }
 ```
 
-### AddStartable extension method
+#### AddStartable extension method
 Allows you to register a startable.
 
 ```csharp
@@ -73,11 +105,39 @@ services.AddStartable<TestStartable>();
 services.AddStartable(new TestStartable());
 ```
 
-### BuildServiceProviderWithStartables extension method
-Creates a ServiceProvider containing services from the provided IServiceCollection and starts all *IStartable* instances.
+### Attribute based startable
+You can also register modules using attributes.
+
+- RegisterAsDependencyInjectionStartable attribute
 
 ```csharp
-var serviceProvider = services.BuildServiceProviderWithStartables();
+public class Startable
+{
+    [RegisterAsDependencyInjectionStartable]
+    public Task Start()
+    {
+        // Do something
+    }
+}
+```
+
+```csharp
+public static class Startable
+{
+    [RegisterAsDependencyInjectionStartable]
+    public static Task Start()
+    {
+        // Do something
+    }
+}
+```
+
+### BuildServiceProviderWithStartables extension method
+If you are manually building the *IServiceProvider*, then you need to use *BuildServiceProviderWithStartablesAsync* extension method.
+This will build the container as usual, but also starts all *IStartable* instances.
+
+```csharp
+var serviceProvider = await services.BuildServiceProviderWithStartablesAsync();
 ```
 
 ## Attribute based registration
@@ -135,58 +195,10 @@ public class Service : IService
 }
 ```
 
-## Attribute based module
-You can also register modules using attributes.
-
-- RegisterAsDependencyInjectionModule attribute
-
-```csharp
-public class Module
-{
-    [RegisterAsDependencyInjectionModule]
-    public void Load(IServiceCollection services)
-    {
-    }
-}
-```
-
-```csharp
-public static class Module
-{
-    [RegisterAsDependencyInjectionModule]
-    public static void Load(IServiceCollection services)
-    {
-    }
-}
-```
-
-## Attribute based startable
-You can also register modules using attributes.
-
-- RegisterAsDependencyInjectionStartable attribute
-
-```csharp
-public class Startable
-{
-    [RegisterAsDependencyInjectionStartable]
-    public void Start()
-    {
-    }
-}
-```
-
-```csharp
-public static class Startable
-{
-    [RegisterAsDependencyInjectionStartable]
-    public static void Start()
-    {
-    }
-}
-```
-
 ## Roslyn Analysers
 - FMEDI0001 - Invalid Module Parameter
 - FMEDI0002 - Missing Module Parameter
 - FMEDI0003 - Non empty constructor found on Module
 - FMEDI0004 - Non empty constructor found on Startable
+- FMEDI0005 - Non async method found on Startable
+- FMEDI0006 - Non void method found on Module

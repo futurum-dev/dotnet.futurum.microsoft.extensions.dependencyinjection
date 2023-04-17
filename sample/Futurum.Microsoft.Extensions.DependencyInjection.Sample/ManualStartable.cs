@@ -11,7 +11,7 @@ public class ManualStartable : IStartable
         _logger = logger;
     }
 
-    public void Start()
+    public async Task StartAsync()
     {
         _logger.Information($"{nameof(ManualStartable)} started");
     }

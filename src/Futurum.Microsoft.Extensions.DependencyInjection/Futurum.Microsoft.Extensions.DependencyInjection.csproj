@@ -12,7 +12,7 @@
     <PropertyGroup>
         <PackageId>Futurum.Microsoft.Extensions.DependencyInjection</PackageId>
         <PackageIcon>dotnet-logo.png</PackageIcon>
-        <Description>A dotnet library, that allows Microsoft.Extensions.DependencyInjection to work with Futurum.Core. It also adds support for modules and startables.</Description>
+        <Description>A dotnet library that extends Microsoft.Extensions.DependencyInjection by adding support for modules, startables and attribute based registration</Description>
         <PackageProjectUrl>https://www.futurum.dev/projects/dotnet-futurum.html</PackageProjectUrl>
         <RepositoryUrl>https://github.com/futurum-dev/dotnet.futurum.microsoft.extensions.dependencyinjection</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>

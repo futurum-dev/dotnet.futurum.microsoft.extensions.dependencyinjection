@@ -3,15 +3,17 @@ namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator.Sample;
 public class InstanceStartable
 {
     [RegisterAsDependencyInjectionStartable]
-    public void Register()
+    public Task Start()
     {
+        return Task.CompletedTask;
     }
 }
 
 public static class StaticStartable
 {
     [RegisterAsDependencyInjectionStartable]
-    public static void Register()
+    public static Task Start()
     {
+        return Task.CompletedTask;
     }
 }
