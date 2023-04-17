@@ -7,3 +7,11 @@ namespace Futurum.Microsoft.Extensions.DependencyInjection;
 public sealed class RegisterAsScopedAttribute : RegisterAsAttribute
 {
 }
+
+/// <summary>
+/// Register as a scoped in dependency injection
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+public sealed class RegisterAsScopedAttribute<TService> : RegisterAsAttribute
+{
+}

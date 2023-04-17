@@ -4,6 +4,73 @@ namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator;
 
 public static class Diagnostics
 {
+    public static class Registration
+    {
+        public static IEnumerable<AttributeData> HasAttribute(INamedTypeSymbol classSymbol)
+        {
+            return classSymbol.GetAttributes().Where(IsRegistrationAttribute);
+
+            static bool IsRegistrationAttribute(AttributeData attribute)
+            {
+                var attributeClass = attribute.AttributeClass;
+
+                if (attributeClass == null)
+                    return false;
+
+                return attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                     .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransientAttribute") ||
+                       attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                     .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScopedAttribute") ||
+                       attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                     .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingletonAttribute");
+            }
+        }
+
+        public static class ServiceTypeNotImplementedByClass
+        {
+            public static IEnumerable<Diagnostic> Check(INamedTypeSymbol classSymbol, AttributeData attributeData)
+            {
+                var serviceType = GetServiceTypeFromAttribute(attributeData);
+
+                if (string.IsNullOrEmpty(serviceType))
+                    yield break;
+
+                var classImplementsServiceType = classSymbol.AllInterfaces.Any(x => x.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == serviceType);
+
+                if (!classImplementsServiceType)
+                    yield return Diagnostic.Create(DiagnosticDescriptors.RegistrationServiceTypeNotImplementedByClass,
+                                                   attributeData.ApplicationSyntaxReference?.GetSyntax().GetLocation(),
+                                                   classSymbol.Name,
+                                                   serviceType);
+            }
+
+            private static string? GetServiceTypeFromAttribute(AttributeData attribute)
+            {
+                var attributeClass = attribute.AttributeClass;
+
+                string? serviceType = null;
+
+                if (attributeClass?.IsGenericType == true && attributeClass.TypeArguments.Length == attributeClass.TypeParameters.Length)
+                {
+                    for (var index = 0; index < attributeClass.TypeParameters.Length; index++)
+                    {
+                        var typeParameter = attributeClass.TypeParameters[index];
+                        var typeArgument = attributeClass.TypeArguments[index];
+
+                        switch (typeParameter.Name)
+                        {
+                            case "TService":
+                                serviceType = typeArgument.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+                                break;
+                        }
+                    }
+                }
+
+                return serviceType;
+            }
+        }
+    }
+
     public static class Module
     {
         public static bool HasAttribute(IMethodSymbol methodSymbol)

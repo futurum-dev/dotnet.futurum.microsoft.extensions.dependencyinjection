@@ -12,6 +12,10 @@ public interface IService3
 {
 }
 
+public interface IService4
+{
+}
+
 [RegisterAsTransient(InterfaceRegistrationStrategy = InterfaceRegistrationStrategy.Self)]
 public class TransientService_Self : IService1
 {
@@ -72,7 +76,7 @@ public class SingletonService_Add : IService1
 {
 }
 
-[RegisterAsScoped(ServiceType = typeof(IService2), DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Add)]
+[RegisterAsScoped<IService2>(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Add)]
 public class ServiceMultipleInterfaces : IService1, IService2
 {
 }
@@ -81,12 +85,12 @@ public interface IService_OpenGeneric<T>
 {
 }
 
-[RegisterAsSingleton(ImplementationType = typeof(TransientServiceOpenGeneric<>), ServiceType = typeof(IService_OpenGeneric<>))]
+[RegisterAsTransient(ImplementationType = typeof(TransientServiceOpenGeneric<>), ServiceType = typeof(IService_OpenGeneric<>))]
 public class TransientServiceOpenGeneric<T> : IService_OpenGeneric<T>
 {
 }
 
-[RegisterAsSingleton(ImplementationType = typeof(ScopedServiceOpenGeneric<>), ServiceType = typeof(IService_OpenGeneric<>))]
+[RegisterAsScoped(ImplementationType = typeof(ScopedServiceOpenGeneric<>), ServiceType = typeof(IService_OpenGeneric<>))]
 public class ScopedServiceOpenGeneric<T> : IService_OpenGeneric<T>
 {
 }

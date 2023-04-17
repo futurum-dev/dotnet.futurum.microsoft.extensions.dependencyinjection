@@ -143,10 +143,18 @@ var serviceProvider = await services.BuildServiceProviderWithStartablesAsync();
 ## Attribute based registration
 You can also register services using attributes.
 
+There are generic attributes available allowing you to specify the ServiceType, if your service implements multiple interfaces.
+
 ### RegisterAsSingleton attribute
 ```csharp
 [RegisterAsSingleton]
 public class Service : IService
+{
+}
+```
+```csharp
+[RegisterAsSingleton<IService2>]
+public class Service : IService1, IService2
 {
 }
 ```
@@ -158,11 +166,23 @@ public class Service : IService
 {
 }
 ```
+```csharp
+[RegisterAsScoped<IService2>]
+public class Service : IService1, IService2
+{
+}
+```
 
 ### RegisterAsTransient attribute
 ```csharp
 [RegisterAsTransient]
 public class Service : IService
+{
+}
+```
+```csharp
+[RegisterAsTransient<IService2>]
+public class Service : IService1, IService2
 {
 }
 ```
@@ -202,3 +222,4 @@ public class Service : IService
 - FMEDI0004 - Non empty constructor found on Startable
 - FMEDI0005 - Non async method found on Startable
 - FMEDI0006 - Non void method found on Module
+- FMEDI0007 - Register ServiceType not implemented by class

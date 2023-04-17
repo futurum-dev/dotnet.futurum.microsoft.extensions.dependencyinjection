@@ -1,5 +1,5 @@
 namespace Futurum.Microsoft.Extensions.DependencyInjection.Sample;
 
-public interface IService
+public interface IService1
 {
 }

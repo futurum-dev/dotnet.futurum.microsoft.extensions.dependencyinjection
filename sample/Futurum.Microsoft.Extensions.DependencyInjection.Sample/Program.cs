@@ -30,7 +30,7 @@ try
         
         serviceCollection.AddStartable<ManualStartable>();
 
-        serviceCollection.AddSingleton<IService, ManualService>();
+        serviceCollection.AddSingleton<IService1, ManualService>();
     });
 
     var host = builder.Build();
