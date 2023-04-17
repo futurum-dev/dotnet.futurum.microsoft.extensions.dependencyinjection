@@ -10,15 +10,8 @@ A dotnet library that extends Microsoft.Extensions.DependencyInjection by adding
 - [x] Autodiscovery of DependencyInjection registrations, based on [attributes](#attribute-based-registration) and Source Generators
 - [x] Autodiscovery of DependencyInjection modules, based on [attributes](#attribute-based-module) and Source Generators
 - [x] Autodiscovery of DependencyInjection startables, based on [attributes](#attribute-based-startable) and Source Generators
-- [x] [Roslyn Analysers](#roslyn-analysers) to help build your WebApiEndpoint(s), using best practices
-- [x] Integration with Futurum.Core]
-
-## TryGetService
-Try to get the service object of the specified type.
-
-```csharp
-var result = serviceProvider.TryGetService<ITestService>();
-```
+- [x] [Roslyn Analysers](#roslyn-analysers) to help build your modules, startables and registrations, using best practices
+- [x] Integration with [Futurum.Core](https://github.com/futurum-dev/dotnet.futurum.core)
 
 ## Modules
 A module allows you to break up registration into logical units.
@@ -213,6 +206,13 @@ public class Service : IService
 public class Service : IService
 {
 }
+```
+
+## TryGetService
+Try to get the service object of the specified type.
+
+```csharp
+var result = serviceProvider.TryGetService<ITestService>();
 ```
 
 ## Roslyn Analysers
