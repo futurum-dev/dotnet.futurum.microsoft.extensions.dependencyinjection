@@ -38,7 +38,7 @@ public static class StartableExtensions
     /// Creates a ServiceProvider containing services from the provided IServiceCollection and starts all <see cref="IStartable"/>'s
     /// <remarks>A startable is resolved at the start of the application lifecycle and is a place to perform actions as soon as the DependencyInjection container is built.</remarks>
     /// </summary>
-    public static ServiceProvider BuildServiceProviderWithStartables(this IServiceCollection services)
+    public static async Task<ServiceProvider> BuildServiceProviderWithStartablesAsync(this IServiceCollection services)
     {
         var serviceProvider = services.BuildServiceProvider();
 
@@ -46,7 +46,7 @@ public static class StartableExtensions
         
         foreach (var startable in startables)
         {
-            startable.Start();
+            await startable.StartAsync();
         }
 
         return serviceProvider;

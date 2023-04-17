@@ -15,14 +15,12 @@ internal class StartableHostedService : IHostedService
         _startables = startables;
     }
     
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         foreach (var startable in _startables)
         {
-            startable.Start();
+            await startable.StartAsync();
         }
-        
-        return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken) =>

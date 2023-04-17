@@ -71,6 +71,19 @@ public static class Diagnostics
                 }
             }
         }
+
+        public static class NonVoidReturn
+        {
+            public static IEnumerable<Diagnostic> Check(IMethodSymbol methodSymbol)
+            {
+                if (methodSymbol.ReturnsVoid)
+                    yield break;
+
+                yield return Diagnostic.Create(DiagnosticDescriptors.ModuleNonVoidReturn,
+                                               methodSymbol.Locations.First(),
+                                               methodSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
+            }
+        }
     }
 
     public static class Startable
@@ -103,6 +116,22 @@ public static class Diagnostics
                                                        classSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
                     }
                 }
+            }
+        }
+
+        public static class StartableNonAsyncMethod
+        {
+            public static IEnumerable<Diagnostic> Check(IMethodSymbol methodSymbol)
+            {
+                if (methodSymbol.IsAsync)
+                    yield break;
+
+                if (methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::System.Threading.Tasks.Task"))
+                    yield break;
+
+                yield return Diagnostic.Create(DiagnosticDescriptors.StartableNonAsyncMethod,
+                                               methodSymbol.Locations.First(),
+                                               methodSymbol.Name);
             }
         }
     }

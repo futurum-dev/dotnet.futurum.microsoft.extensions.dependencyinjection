@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Futurum.Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Interface for ALL <see cref="Microsoft.Extensions.DependencyInjection"/> startables
+/// Interface for <see cref="Microsoft.Extensions.DependencyInjection"/> startables
 /// <para></para>
 /// NOTE - You will need to manually add this startable.
 /// <para></para>
@@ -12,5 +12,5 @@ namespace Futurum.Microsoft.Extensions.DependencyInjection;
 /// </summary>
 public interface IStartable
 {
-    void Start();
+    Task StartAsync();
 }

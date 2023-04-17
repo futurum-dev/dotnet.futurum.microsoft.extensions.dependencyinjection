@@ -2,15 +2,15 @@ namespace Futurum.Microsoft.Extensions.DependencyInjection;
 
 public class StartableFunctionWrapper : IStartable
 {
-    private readonly Action _func;
+    private readonly Func<Task> _func;
 
-    public StartableFunctionWrapper(Action func)
+    public StartableFunctionWrapper(Func<Task> func)
     {
         _func = func;
     }
     
-    public void Start()
+    public async Task StartAsync()
     {
-        _func();
+        await _func();
     }
 }
