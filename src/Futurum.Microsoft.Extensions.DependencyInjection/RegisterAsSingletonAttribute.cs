@@ -7,3 +7,11 @@ namespace Futurum.Microsoft.Extensions.DependencyInjection;
 public sealed class RegisterAsSingletonAttribute : RegisterAsAttribute
 {
 }
+
+/// <summary>
+/// Register as a singleton in dependency injection
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+public sealed class RegisterAsSingletonAttribute<TService> : RegisterAsAttribute
+{
+}

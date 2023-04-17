@@ -54,4 +54,12 @@ public static class DiagnosticDescriptors
         "Futurum.Microsoft.Extensions.DependencyInjection.Generator",
         DiagnosticSeverity.Error,
         true);
+
+    public static readonly DiagnosticDescriptor RegistrationServiceTypeNotImplementedByClass = new(
+        "FMEDI0007",
+        "Register ServiceType not implemented by class",
+        $"Class '{{0}}' does not implement ServiceType '{{1}}'.{Environment.NewLine} Class must implement the ServiceType.",
+        "Futurum.Microsoft.Extensions.DependencyInjection.Generator",
+        DiagnosticSeverity.Error,
+        true);
 }

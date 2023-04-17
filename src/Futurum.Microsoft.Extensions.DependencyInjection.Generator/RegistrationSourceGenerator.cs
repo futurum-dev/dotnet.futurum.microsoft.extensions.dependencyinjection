@@ -73,7 +73,7 @@ public class RegistrationSourceGenerator
 
         var (serviceTypes, implementationType, duplicateRegistrationStrategy, interfaceRegistrationStrategy) = GetValuesFromAttribute(attribute);
 
-        if (IsInterfaceRegistrationStrategyReallySelfWithInterfaces(interfaceRegistrationStrategy, implementationType, serviceTypes))
+        if (IsInterfaceRegistrationStrategySelfWithInterfaces(interfaceRegistrationStrategy, implementationType, serviceTypes))
         {
             interfaceRegistrationStrategy = InterfaceRegistrationStrategy.SelfWithInterfaces;
         }
@@ -107,10 +107,19 @@ public class RegistrationSourceGenerator
         (HashSet<string> serviceTypes, string? implementationType, DuplicateRegistrationStrategy? duplicateRegistrationStrategy, InterfaceRegistrationStrategy? interfaceRegistrationStrategy)
         GetValuesFromAttribute(AttributeData attribute)
     {
+        var attributeClass = attribute.AttributeClass;
+
         var serviceTypes = new HashSet<string>();
         string? implementationType = null;
         DuplicateRegistrationStrategy? duplicateRegistrationStrategy = null;
         InterfaceRegistrationStrategy? interfaceRegistrationStrategy = null;
+        
+        var genericServiceTypes = GetValuesFromGenericTypes(attribute);
+        
+        foreach (var genericServiceType in genericServiceTypes)
+        {
+            serviceTypes.Add(genericServiceType);
+        }
 
         foreach (var parameter in attribute.NamedArguments)
         {
@@ -120,24 +129,50 @@ public class RegistrationSourceGenerator
             if (string.IsNullOrEmpty(name) || value == null)
                 continue;
 
-            switch (name)
+            if (attributeClass?.IsGenericType == false && name == "ServiceType")
             {
-                case "ServiceType":
-                    serviceTypes.Add(value.ToString());
-                    break;
-                case "ImplementationType":
-                    implementationType = value.ToString();
-                    break;
-                case "Duplicate":
-                    duplicateRegistrationStrategy = ParseEnum<DuplicateRegistrationStrategy>(value);
-                    break;
-                case "Registration":
-                    interfaceRegistrationStrategy = ParseEnum<InterfaceRegistrationStrategy>(value);
-                    break;
+                serviceTypes.Add(value.ToString());
+            }
+            else if (attributeClass?.IsGenericType == false && name == "ImplementationType")
+            {
+                implementationType = value.ToString();
+            }
+            else if (name == "Duplicate")
+            {
+                duplicateRegistrationStrategy = ParseEnum<DuplicateRegistrationStrategy>(value);
+            }
+            else if (name == "Registration")
+            {
+                interfaceRegistrationStrategy = ParseEnum<InterfaceRegistrationStrategy>(value);
             }
         }
 
         return (serviceTypes, implementationType, duplicateRegistrationStrategy, interfaceRegistrationStrategy);
+    }
+
+    private static IEnumerable<string> GetValuesFromGenericTypes(AttributeData attribute)
+    {
+        var attributeClass = attribute.AttributeClass;
+
+        var serviceTypes = new HashSet<string>();
+
+        if (attributeClass?.IsGenericType == true && attributeClass.TypeArguments.Length == attributeClass.TypeParameters.Length)
+        {
+            for (var index = 0; index < attributeClass.TypeParameters.Length; index++)
+            {
+                var typeParameter = attributeClass.TypeParameters[index];
+                var typeArgument = attributeClass.TypeArguments[index];
+
+                switch (typeParameter.Name)
+                {
+                    case "TService":
+                        serviceTypes.Add(typeArgument.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+                        break;
+                }
+            }
+        }
+
+        return serviceTypes;
     }
 
     private static TEnum? ParseEnum<TEnum>(object value)
@@ -149,7 +184,7 @@ public class RegistrationSourceGenerator
             _                  => null
         };
 
-    private static bool IsInterfaceRegistrationStrategyReallySelfWithInterfaces(InterfaceRegistrationStrategy? interfaceRegistrationStrategy, string? implementationType, IEnumerable<string> serviceTypes) =>
+    private static bool IsInterfaceRegistrationStrategySelfWithInterfaces(InterfaceRegistrationStrategy? interfaceRegistrationStrategy, string? implementationType, IEnumerable<string> serviceTypes) =>
         interfaceRegistrationStrategy == null && implementationType == null && !serviceTypes.Any();
 
     private static bool IsImplementationTypeMissing(string? implementationType) =>
@@ -182,7 +217,7 @@ public class RegistrationSourceGenerator
         }
 
         registrationLifetime = RegistrationLifetime.Transient;
-        
+
         return false;
     }
 

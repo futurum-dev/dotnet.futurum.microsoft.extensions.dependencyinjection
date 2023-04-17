@@ -1,5 +1,5 @@
 namespace Futurum.Microsoft.Extensions.DependencyInjection.Sample;
 
-public class ManualService : IService
+public class ManualService : IService1
 {
 }
