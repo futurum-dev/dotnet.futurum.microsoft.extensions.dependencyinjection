@@ -83,9 +83,29 @@ var serviceProvider = services.BuildServiceProviderWithStartables();
 ## Attribute based registration
 You can also register services using attributes.
 
-- RegisterAsSingleton attribute
-- RegisterAsScoped attribute
-- RegisterAsTransient attribute
+### RegisterAsSingleton attribute
+```csharp
+[RegisterAsSingleton]
+public class Service : IService
+{
+}
+```
+
+### RegisterAsScoped attribute
+```csharp
+[RegisterAsScoped]
+public class Service : IService
+{
+}
+```
+
+### RegisterAsTransient attribute
+```csharp
+[RegisterAsTransient]
+public class Service : IService
+{
+}
+```
 
 ### DuplicateRegistrationStrategy
 - Try - Adds the new registration, if the service hasn't already been registered
@@ -94,6 +114,13 @@ You can also register services using attributes.
 
 **NOTE** - This defaults to *Try*
 
+```csharp
+[RegisterAsSingleton(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Add)]
+public class Service : IService
+{
+}
+```
+
 ### InterfaceRegistrationStrategy
 - Self - Registers the service as itself
 - ImplementedInterfaces - Registers the service as each its implemented interfaces
@@ -101,15 +128,62 @@ You can also register services using attributes.
 
 **NOTE** - This defaults to *SelfWithInterfaces*
 
+```csharp
+[RegisterAsSingleton(InterfaceRegistrationStrategy = InterfaceRegistrationStrategy.ImplementedInterfaces)]
+public class Service : IService
+{
+}
+```
+
 ## Attribute based module
 You can also register modules using attributes.
 
 - RegisterAsDependencyInjectionModule attribute
 
+```csharp
+public class Module
+{
+    [RegisterAsDependencyInjectionModule]
+    public void Load(IServiceCollection services)
+    {
+    }
+}
+```
+
+```csharp
+public static class Module
+{
+    [RegisterAsDependencyInjectionModule]
+    public static void Load(IServiceCollection services)
+    {
+    }
+}
+```
+
 ## Attribute based startable
 You can also register modules using attributes.
 
 - RegisterAsDependencyInjectionStartable attribute
+
+```csharp
+public class Startable
+{
+    [RegisterAsDependencyInjectionStartable]
+    public void Start()
+    {
+    }
+}
+```
+
+```csharp
+public static class Startable
+{
+    [RegisterAsDependencyInjectionStartable]
+    public static void Start()
+    {
+    }
+}
+```
 
 ## Roslyn Analysers
 - FMEDI0001 - Invalid Module Parameter
