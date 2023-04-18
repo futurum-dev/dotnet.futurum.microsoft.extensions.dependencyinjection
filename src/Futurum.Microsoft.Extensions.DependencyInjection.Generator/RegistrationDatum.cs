@@ -4,28 +4,24 @@ namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator;
 
 public sealed class RegistrationDatum : IEquatable<RegistrationDatum>
 {
-    public RegistrationDatum(IEnumerable<string> serviceTypes,
+    public RegistrationDatum(string serviceType,
                              string implementationType,
                              RegistrationLifetime lifetime,
-                             DuplicateRegistrationStrategy duplicateRegistrationStrategy,
-                             InterfaceRegistrationStrategy interfaceRegistration)
+                             DuplicateRegistrationStrategy duplicateRegistrationStrategy)
     {
-        ServiceTypes = new EquatableArray<string>(serviceTypes);
+        ServiceType = serviceType;
         ImplementationType = implementationType;
         Lifetime = lifetime;
         DuplicateRegistrationStrategy = duplicateRegistrationStrategy;
-        InterfaceRegistration = interfaceRegistration;
     }
 
-    public EquatableArray<string> ServiceTypes { get; }
+    public string ServiceType { get; }
 
     public string ImplementationType { get; }
 
     public RegistrationLifetime Lifetime { get; }
 
     public DuplicateRegistrationStrategy DuplicateRegistrationStrategy { get; }
-
-    public InterfaceRegistrationStrategy InterfaceRegistration { get; }
 
     public bool Equals(RegistrationDatum other)
     {
@@ -36,9 +32,8 @@ public sealed class RegistrationDatum : IEquatable<RegistrationDatum>
 
         return Lifetime == other.Lifetime
                && ImplementationType == other.ImplementationType
-               && ServiceTypes.Equals(other.ServiceTypes)
-               && DuplicateRegistrationStrategy == other.DuplicateRegistrationStrategy
-               && InterfaceRegistration == other.InterfaceRegistration;
+               && ServiceType.Equals(other.ServiceType)
+               && DuplicateRegistrationStrategy == other.DuplicateRegistrationStrategy;
     }
 
     public override bool Equals(object obj) =>
@@ -47,9 +42,8 @@ public sealed class RegistrationDatum : IEquatable<RegistrationDatum>
     public override int GetHashCode() =>
         HashCode.Combine(Lifetime,
                          ImplementationType,
-                         ServiceTypes,
-                         DuplicateRegistrationStrategy,
-                         InterfaceRegistration);
+                         ServiceType,
+                         DuplicateRegistrationStrategy);
 
     public static bool operator ==(RegistrationDatum left, RegistrationDatum right) =>
         Equals(left, right);

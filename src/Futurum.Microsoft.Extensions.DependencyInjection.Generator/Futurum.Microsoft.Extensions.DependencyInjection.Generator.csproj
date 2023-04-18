@@ -20,9 +20,6 @@
       <Compile Include="..\Futurum.Microsoft.Extensions.DependencyInjection\DuplicateRegistrationStrategy.cs">
         <Link>DuplicateRegistrationStrategy.cs</Link>
       </Compile>
-      <Compile Include="..\Futurum.Microsoft.Extensions.DependencyInjection\InterfaceRegistrationStrategy.cs">
-        <Link>InterfaceRegistrationStrategy.cs</Link>
-      </Compile>
     </ItemGroup>
 
 </Project>

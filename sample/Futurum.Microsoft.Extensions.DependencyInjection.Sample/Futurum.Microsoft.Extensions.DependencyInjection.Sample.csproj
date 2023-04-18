@@ -23,4 +23,9 @@
         <ProjectReference Include="..\..\src\Futurum.Microsoft.Extensions.DependencyInjection.Generator\Futurum.Microsoft.Extensions.DependencyInjection.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="AutomaticSingletonGenericService.cs" />
+      <Compile Remove="AutomaticSingletonService.cs" />
+    </ItemGroup>
+
 </Project>

@@ -1,6 +1,6 @@
 namespace Futurum.Microsoft.Extensions.DependencyInjection.Sample;
 
 [RegisterAsSingleton]
-public class AutomaticSingletonService : IService1
+public class Automatic_Singleton : IService1
 {
 }

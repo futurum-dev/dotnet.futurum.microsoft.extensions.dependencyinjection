@@ -23,16 +23,13 @@ public static class RegistrationWriter
     {
         var serviceCollectionRegistrationMethod = GetServiceCollectionRegistrationMethod(registrationDatum.DuplicateRegistrationStrategy);
 
-        foreach (var serviceType in registrationDatum.ServiceTypes)
-        {
-            if (serviceType.IsNullOrWhiteSpace())
-                continue;
+        // if (registrationDatum.ServiceType.IsNullOrWhiteSpace())
+        //     return;
 
-            WriteServiceType(codeBuilder, registrationDatum, serviceCollectionRegistrationMethod, serviceType);
-        }
+        WriteRegistration(codeBuilder, registrationDatum, serviceCollectionRegistrationMethod, registrationDatum.ServiceType);
     }
 
-    private static void WriteServiceType(IndentedStringBuilder codeBuilder, RegistrationDatum registrationDatum, string serviceCollectionRegistrationMethod, string serviceType)
+    private static void WriteRegistration(IndentedStringBuilder codeBuilder, RegistrationDatum registrationDatum, string serviceCollectionRegistrationMethod, string serviceType)
     {
         codeBuilder
             .Append("global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.")
@@ -65,7 +62,7 @@ public static class RegistrationWriter
         }
 
         var lifetime = GetMicrosoftExtensionsDependencyInjectionServiceLifetime(registrationDatum.Lifetime);
-        
+
         codeBuilder
             .AppendLine(", ")
             .Append("global::")

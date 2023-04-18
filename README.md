@@ -136,51 +136,88 @@ var serviceProvider = await services.BuildServiceProviderWithStartablesAsync();
 ## Attribute based registration
 You can also register services using attributes.
 
-There are generic attributes available allowing you to specify the ServiceType, if your service implements multiple interfaces.
+The attributes have been created is a discoverable way. They take the following form:
+- RegisterAs{Lifetime}
+- RegisterAs{Lifetime}.AsSelf
+- RegisterAs{Lifetime}.As{ServiceType}
+- RegisterAs{Lifetime}.AsImplementedInterfaces
+- RegisterAs{Lifetime}.AsImplementedInterfacesAndSelf
+- RegisterAs{Lifetime}.AsOpenGeneric
 
-### RegisterAsSingleton attribute
-```csharp
-[RegisterAsSingleton]
-public class Service : IService
-{
-}
-```
-```csharp
-[RegisterAsSingleton<IService2>]
-public class Service : IService1, IService2
-{
-}
-```
+There are 3 lifetimes available:
+- Singleton
+- Scoped
+- Transient
 
-### RegisterAsScoped attribute
+### RegisterAs{Lifetime} attribute
+This will register the class against the 1 interface the class implements, for the specified lifetime.
+
+e.g. This will register *Service* against *IService* with a *Scoped* lifetime.
 ```csharp
 [RegisterAsScoped]
 public class Service : IService
 {
 }
 ```
+
+### RegisterAs{Lifetime}.AsSelf attribute
+This will register the class against itself, for the specified lifetime.
+
+e.g. This will register *Service* against *Service* with a *Scoped* lifetime.
 ```csharp
-[RegisterAsScoped<IService2>]
+[RegisterAsScoped.AsSelf]
+public class Service
+{
+}
+```
+
+### RegisterAs{Lifetime}.As{ServiceType} attribute
+This will register the class against the specified interface, for the specified lifetime.
+
+e.g. This will register *Service* against *IService1* with a *Scoped* lifetime.
+```csharp
+[RegisterAsScoped.As<IService2>]
 public class Service : IService1, IService2
 {
 }
 ```
 
-### RegisterAsTransient attribute
+### RegisterAs{Lifetime}.AsImplementedInterfaces attribute
+This will register the class against all the interfaces it implements directly, for the specified lifetime.
+
+e.g. This will register *Service* against *IService1* and *IService2* with a *Scoped* lifetime.
 ```csharp
-[RegisterAsTransient]
-public class Service : IService
+[RegisterAsScoped.AsImplementedInterfaces]
+public class Service : IService1, IService2
 {
 }
 ```
+
+### RegisterAs{Lifetime}.AsImplementedInterfacesAndSelf attribute
+This will register the class against all the interfaces it implements directly and itself, for the specified lifetime.
+
+e.g. This will register *Service* against *Service*, *IService1* and *IService2* with a *Scoped* lifetime.
 ```csharp
-[RegisterAsTransient<IService2>]
+[RegisterAsScoped.AsImplementedInterfacesAndSelf]
 public class Service : IService1, IService2
+{
+}
+```
+
+### RegisterAs{Lifetime}.AsOpenGeneric attribute
+This will register the an open generic class against an open generic interface, for the specified lifetime.
+
+e.g. This will register *Service&lt;T&gt;* against *IService&lt;T&gt;* with a *Scoped* lifetime.
+```csharp
+[RegisterAsScoped.AsOpenGeneric(ImplementationType = typeof(Service<>), ServiceType = typeof(IService<>))]
+public class Service<T> : IService<T>
 {
 }
 ```
 
 ### DuplicateRegistrationStrategy
+You can also specify how to handle duplicate registrations.
+
 - Try - Adds the new registration, if the service hasn't already been registered
 - Replace - Removes any existing registration and then adds the new registration
 - Add - Adds the new registration, irrespective of if its previously been registered
@@ -189,20 +226,6 @@ public class Service : IService1, IService2
 
 ```csharp
 [RegisterAsSingleton(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Add)]
-public class Service : IService
-{
-}
-```
-
-### InterfaceRegistrationStrategy
-- Self - Registers the service as itself
-- ImplementedInterfaces - Registers the service as each its implemented interfaces
-- SelfWithInterfaces - Registers the service as itself and each its implemented interfaces
-
-**NOTE** - This defaults to *SelfWithInterfaces*
-
-```csharp
-[RegisterAsSingleton(InterfaceRegistrationStrategy = InterfaceRegistrationStrategy.ImplementedInterfaces)]
 public class Service : IService
 {
 }
@@ -223,3 +246,4 @@ var result = serviceProvider.TryGetService<ITestService>();
 - FMEDI0005 - Non async method found on Startable
 - FMEDI0006 - Non void method found on Module
 - FMEDI0007 - Register ServiceType not implemented by class
+- FMEDI0008 - Registration, must only have 1 interface

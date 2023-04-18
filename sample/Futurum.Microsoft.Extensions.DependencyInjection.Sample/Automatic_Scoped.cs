@@ -1,6 +1,6 @@
 namespace Futurum.Microsoft.Extensions.DependencyInjection.Sample;
 
 [RegisterAsScoped]
-public class AutomaticScopedService : IService1
+public class Automatic_Scoped : IService1
 {
 }

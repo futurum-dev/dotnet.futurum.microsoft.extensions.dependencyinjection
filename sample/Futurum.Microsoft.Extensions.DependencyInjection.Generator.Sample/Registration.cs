@@ -16,68 +16,83 @@ public interface IService4
 {
 }
 
-[RegisterAsTransient(InterfaceRegistrationStrategy = InterfaceRegistrationStrategy.Self)]
-public class TransientService_Self : IService1
+[RegisterAsTransient.AsSelf]
+public class TransientService_AsSelf : IService1
 {
 }
 
-[RegisterAsTransient(InterfaceRegistrationStrategy = InterfaceRegistrationStrategy.ImplementedInterfaces)]
-public class TransientService_ImplementedInterfaces : IService1
+[RegisterAsTransient.As<IService1>]
+public class TransientService_As : IService1
 {
 }
 
-[RegisterAsTransient(InterfaceRegistrationStrategy = InterfaceRegistrationStrategy.SelfWithInterfaces)]
-public class TransientService_SelfWithInterfaces : IService1
+[RegisterAsTransient.AsImplementedInterfaces]
+public class TransientService_AsImplementedInterfaces : IService1
 {
 }
 
-[RegisterAsScoped(InterfaceRegistrationStrategy = InterfaceRegistrationStrategy.Self)]
-public class ScopedService_Self : IService2
+[RegisterAsTransient.AsImplementedInterfacesAndSelf]
+public class TransientService_AsImplementedInterfacesAndSelf : IService1
 {
 }
 
-[RegisterAsScoped(InterfaceRegistrationStrategy = InterfaceRegistrationStrategy.ImplementedInterfaces)]
-public class ScopedService_ImplementedInterfaces : IService2
+[RegisterAsScoped.AsSelf]
+public class ScopedService_AsSelf : IService2
 {
 }
 
-[RegisterAsScoped(InterfaceRegistrationStrategy = InterfaceRegistrationStrategy.SelfWithInterfaces)]
-public class ScopedService_SelfWithInterfaces : IService2
+[RegisterAsTransient.As<IService1>]
+public class ScopedService_As : IService1
 {
 }
 
-[RegisterAsSingleton(InterfaceRegistrationStrategy = InterfaceRegistrationStrategy.Self)]
-public class SingletonService_Self : IService3
+[RegisterAsScoped.AsImplementedInterfaces]
+public class ScopedService_AsImplementedInterfaces : IService2
 {
 }
 
-[RegisterAsSingleton(InterfaceRegistrationStrategy = InterfaceRegistrationStrategy.ImplementedInterfaces)]
-public class SingletonService_ImplementedInterfaces : IService3
+[RegisterAsScoped.AsImplementedInterfacesAndSelf]
+public class ScopedService_AsImplementedInterfacesAndSelf : IService2
 {
 }
 
-[RegisterAsSingleton(InterfaceRegistrationStrategy = InterfaceRegistrationStrategy.SelfWithInterfaces)]
-public class SingletonService_SelfWithInterfaces : IService3
+[RegisterAsSingleton.AsSelf]
+public class SingletonService_AsSelf : IService3
 {
 }
 
-[RegisterAsScoped(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Try)]
+[RegisterAsTransient.As<IService1>]
+public class SingletonService_As : IService1
+{
+}
+
+[RegisterAsSingleton.AsImplementedInterfaces]
+public class SingletonService_AsImplementedInterfaces : IService3
+{
+}
+
+[RegisterAsSingleton.AsImplementedInterfacesAndSelf]
+public class SingletonService_AsImplementedInterfacesAndSelf : IService3
+{
+}
+
+[RegisterAsScoped.AsSelf(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Try)]
 public class SingletonService_Try : IService1
 {
 }
 
-[RegisterAsScoped(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Replace)]
+[RegisterAsScoped.AsSelf(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Replace)]
 public class SingletonService_Replace : IService1
 {
 }
 
-[RegisterAsScoped(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Add)]
+[RegisterAsScoped.AsSelf(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Add)]
 public class SingletonService_Add : IService1
 {
 }
 
-[RegisterAsScoped<IService2>(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Add)]
-public class ServiceMultipleInterfaces : IService1, IService2
+[RegisterAsScoped.AsImplementedInterfaces(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Add)]
+public class Service_AsImplementedInterfaces : IService1, IService2
 {
 }
 
@@ -85,17 +100,17 @@ public interface IService_OpenGeneric<T>
 {
 }
 
-[RegisterAsTransient(ImplementationType = typeof(TransientServiceOpenGeneric<>), ServiceType = typeof(IService_OpenGeneric<>))]
-public class TransientServiceOpenGeneric<T> : IService_OpenGeneric<T>
+[RegisterAsTransient.AsOpenGeneric(ImplementationType = typeof(TransientService_AsOpenGeneric<>), ServiceType = typeof(IService_OpenGeneric<>))]
+public class TransientService_AsOpenGeneric<T> : IService_OpenGeneric<T>
 {
 }
 
-[RegisterAsScoped(ImplementationType = typeof(ScopedServiceOpenGeneric<>), ServiceType = typeof(IService_OpenGeneric<>))]
-public class ScopedServiceOpenGeneric<T> : IService_OpenGeneric<T>
+[RegisterAsScoped.AsOpenGeneric(ImplementationType = typeof(ScopedService_AsOpenGeneric<>), ServiceType = typeof(IService_OpenGeneric<>))]
+public class ScopedService_AsOpenGeneric<T> : IService_OpenGeneric<T>
 {
 }
 
-[RegisterAsSingleton(ImplementationType = typeof(SingletonServiceOpenGeneric<>), ServiceType = typeof(IService_OpenGeneric<>))]
-public class SingletonServiceOpenGeneric<T> : IService_OpenGeneric<T>
+[RegisterAsSingleton.AsOpenGeneric(ImplementationType = typeof(SingletonService_AsOpenGeneric<>), ServiceType = typeof(IService_OpenGeneric<>))]
+public class SingletonService_AsOpenGeneric<T> : IService_OpenGeneric<T>
 {
 }

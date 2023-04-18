@@ -2,8 +2,6 @@ using System.Collections.Immutable;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using Futurum.Microsoft.Extensions.DependencyInjection.Generator.Extensions;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -39,17 +37,192 @@ public class RegistrationSourceGenerator
         if (classSymbol is null)
             return null;
 
-        var attributes = classSymbol.GetAttributes();
+        var registrationAttributes = Diagnostics.Registration.GetAttributes(classSymbol);
 
-        var registrationData = attributes
-                               .Select(attribute => CreateRegistrationDatum(classSymbol, attribute))
-                               .Where(registrationDatum => registrationDatum != null)
-                               .ToArray();
+        if (!registrationAttributes.Any())
+            return null;
 
-        if (registrationData.Length == 0)
+        var registrationData = GetRegistrationData(registrationAttributes, classSymbol);
+
+        if (!registrationData.Any())
             return null;
 
         return new RegistrationContext(registrationData: registrationData);
+    }
+
+    private static IEnumerable<RegistrationDatum> GetRegistrationData(IEnumerable<AttributeData> registrationAttributes, INamedTypeSymbol classSymbol)
+    {
+        var implementedInterfaceNames = classSymbol.Interfaces.Select(implementedInterface => implementedInterface.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+
+        foreach (var registrationAttribute in registrationAttributes)
+        {
+            if (Diagnostics.Registration.IsDefaultAttribute(registrationAttribute))
+            {
+                yield return Default(classSymbol, implementedInterfaceNames.First(), registrationAttribute);
+                continue;
+            }
+
+            if (IsAsSelfAttribute(registrationAttribute))
+            {
+                yield return AsSelf(classSymbol, registrationAttribute);
+                continue;
+            }
+
+            if (IsAsGenericTypeAttribute(registrationAttribute))
+            {
+                yield return As(classSymbol, registrationAttribute);
+                continue;
+            }
+
+            if (IsAsImplementedInterfacesAttribute(registrationAttribute))
+            {
+                foreach (var registrationDatum in AsImplementedInterfaces(classSymbol, implementedInterfaceNames, registrationAttribute))
+                {
+                    yield return registrationDatum;
+                }
+
+                continue;
+            }
+
+            if (IsAsImplementedInterfacesAndSelfAttribute(registrationAttribute))
+            {
+                foreach (var registrationDatum in AsImplementedInterfacesAndSelf(classSymbol, implementedInterfaceNames, registrationAttribute))
+                {
+                    yield return registrationDatum;
+                }
+
+                continue;
+            }
+
+            if (IsAsOpenGenericAttribute(registrationAttribute))
+            {
+                yield return AsOpenGeneric(classSymbol, registrationAttribute);
+                continue;
+            }
+        }
+    }
+
+    private static RegistrationDatum Default(INamedTypeSymbol classSymbol, string implementedInterfaceName, AttributeData registrationAttribute)
+    {
+        var classTypeName = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+
+        var registrationLifetime = GetRegistrationLifetime(registrationAttribute);
+
+        var duplicateRegistrationStrategy = GetDuplicateRegistrationStrategyFromAttribute(registrationAttribute) ?? DuplicateRegistrationStrategy.Try;
+
+        return new RegistrationDatum(implementedInterfaceName,
+                                     classTypeName,
+                                     registrationLifetime,
+                                     duplicateRegistrationStrategy);
+    }
+
+    private static RegistrationDatum AsSelf(INamedTypeSymbol classSymbol, AttributeData registrationAttribute)
+    {
+        var classTypeName = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+
+        var registrationLifetime = GetRegistrationLifetime(registrationAttribute);
+
+        var duplicateRegistrationStrategy = GetDuplicateRegistrationStrategyFromAttribute(registrationAttribute) ?? DuplicateRegistrationStrategy.Try;
+
+        return new RegistrationDatum(classTypeName,
+                                     classTypeName,
+                                     registrationLifetime,
+                                     duplicateRegistrationStrategy);
+    }
+
+    private static RegistrationDatum As(INamedTypeSymbol classSymbol, AttributeData registrationAttribute)
+    {
+        var classTypeName = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+
+        var serviceType = GetServiceTypeFromGenericTypes(registrationAttribute);
+
+        var registrationLifetime = GetRegistrationLifetime(registrationAttribute);
+
+        var duplicateRegistrationStrategy = GetDuplicateRegistrationStrategyFromAttribute(registrationAttribute) ?? DuplicateRegistrationStrategy.Try;
+
+        return new RegistrationDatum(serviceType,
+                                     classTypeName,
+                                     registrationLifetime,
+                                     duplicateRegistrationStrategy);
+    }
+
+    private static IEnumerable<RegistrationDatum> AsImplementedInterfaces(INamedTypeSymbol classSymbol, IEnumerable<string> implementedInterfaceNames, AttributeData registrationAttribute)
+    {
+        var classTypeName = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+
+        var registrationLifetime = GetRegistrationLifetime(registrationAttribute);
+
+        var duplicateRegistrationStrategy = GetDuplicateRegistrationStrategyFromAttribute(registrationAttribute) ?? DuplicateRegistrationStrategy.Try;
+
+        foreach (var implementedInterfaceName in implementedInterfaceNames)
+        {
+            yield return new RegistrationDatum(implementedInterfaceName,
+                                               classTypeName,
+                                               registrationLifetime,
+                                               duplicateRegistrationStrategy);
+        }
+    }
+
+    private static IEnumerable<RegistrationDatum> AsImplementedInterfacesAndSelf(INamedTypeSymbol classSymbol, IEnumerable<string> implementedInterfaceNames, AttributeData registrationAttribute)
+    {
+        var classTypeName = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+
+        var registrationLifetime = GetRegistrationLifetime(registrationAttribute);
+
+        var duplicateRegistrationStrategy = GetDuplicateRegistrationStrategyFromAttribute(registrationAttribute) ?? DuplicateRegistrationStrategy.Try;
+
+        yield return new RegistrationDatum(classTypeName,
+                                           classTypeName,
+                                           registrationLifetime,
+                                           duplicateRegistrationStrategy);
+
+        foreach (var implementedInterfaceName in implementedInterfaceNames)
+        {
+            yield return new RegistrationDatum(implementedInterfaceName,
+                                               classTypeName,
+                                               registrationLifetime,
+                                               duplicateRegistrationStrategy);
+        }
+    }
+
+    private static RegistrationDatum AsOpenGeneric(INamedTypeSymbol classSymbol, AttributeData registrationAttribute)
+    {
+        var (serviceType, implementationType) = GetOpenGenericFromAttribute(registrationAttribute);
+
+        var registrationLifetime = GetRegistrationLifetime(registrationAttribute);
+
+        var duplicateRegistrationStrategy = GetDuplicateRegistrationStrategyFromAttribute(registrationAttribute) ?? DuplicateRegistrationStrategy.Try;
+
+        return new RegistrationDatum(serviceType,
+                                     implementationType,
+                                     registrationLifetime,
+                                     duplicateRegistrationStrategy);
+    }
+
+    private static (string? serviceType, string? implementationType) GetOpenGenericFromAttribute(AttributeData attribute)
+    {
+        string? serviceType = null;
+        string? implementationType = null;
+
+        foreach (var parameter in attribute.NamedArguments)
+        {
+            var name = parameter.Key;
+            var value = parameter.Value.Value;
+
+            if (string.IsNullOrEmpty(name) || value == null)
+                continue;
+
+            if (name == "ServiceType")
+            {
+                serviceType = value.ToString();
+            }
+            else if (name == "ImplementationType")
+            {
+                implementationType = value.ToString();
+            }
+        }
+
+        return (serviceType, implementationType);
     }
 
     public static void ExecuteGeneration(SourceProductionContext sourceContext, ImmutableArray<RegistrationContext> registrationContexts, string assemblyName)
@@ -66,60 +239,38 @@ public class RegistrationSourceGenerator
         sourceContext.AddSource("Registration.g.cs", SourceText.From(codeText, Encoding.UTF8));
     }
 
-    private static RegistrationDatum? CreateRegistrationDatum(INamedTypeSymbol classSymbol, AttributeData attribute)
+    private static TEnum? ParseEnum<TEnum>(object value)
+        where TEnum : struct, Enum =>
+        value switch
+        {
+            int numberValue    => Enum.IsDefined(typeof(TEnum), numberValue) ? (TEnum)Enum.ToObject(typeof(TEnum), numberValue) : null,
+            string stringValue => Enum.TryParse<TEnum>(stringValue, out var strategy) ? strategy : null,
+            _                  => null
+        };
+
+    private static RegistrationLifetime GetRegistrationLifetime(AttributeData attribute)
     {
-        if (!IsRegisterAsAttribute(attribute, out var serviceLifetime))
-            return null;
-
-        var (serviceTypes, implementationType, duplicateRegistrationStrategy, interfaceRegistrationStrategy) = GetValuesFromAttribute(attribute);
-
-        if (IsInterfaceRegistrationStrategySelfWithInterfaces(interfaceRegistrationStrategy, implementationType, serviceTypes))
+        if (IsTransientAttribute(attribute))
         {
-            interfaceRegistrationStrategy = InterfaceRegistrationStrategy.SelfWithInterfaces;
+            return RegistrationLifetime.Transient;
         }
 
-        if (IsImplementationTypeMissing(implementationType))
+        if (IsScopedAttribute(attribute))
         {
-            implementationType = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            return RegistrationLifetime.Scoped;
         }
 
-        if (IsRegisterAllInterfaces(interfaceRegistrationStrategy))
+        if (IsSingletonAttribute(attribute))
         {
-            foreach (var interfaceName in classSymbol.AllInterfaces.Select(implementedInterface => implementedInterface.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)))
-            {
-                serviceTypes.Add(interfaceName);
-            }
+            return RegistrationLifetime.Singleton;
         }
 
-        if (IsSelfRegistration(interfaceRegistrationStrategy, serviceTypes))
-        {
-            serviceTypes.Add(implementationType);
-        }
-
-        return new RegistrationDatum(serviceTypes,
-                                     implementationType,
-                                     serviceLifetime,
-                                     duplicateRegistrationStrategy ?? DuplicateRegistrationStrategy.Try,
-                                     interfaceRegistrationStrategy ?? InterfaceRegistrationStrategy.SelfWithInterfaces);
+        return RegistrationLifetime.Transient;
     }
 
-    private static
-        (HashSet<string> serviceTypes, string? implementationType, DuplicateRegistrationStrategy? duplicateRegistrationStrategy, InterfaceRegistrationStrategy? interfaceRegistrationStrategy)
-        GetValuesFromAttribute(AttributeData attribute)
+    private static DuplicateRegistrationStrategy? GetDuplicateRegistrationStrategyFromAttribute(AttributeData attribute)
     {
-        var attributeClass = attribute.AttributeClass;
-
-        var serviceTypes = new HashSet<string>();
-        string? implementationType = null;
         DuplicateRegistrationStrategy? duplicateRegistrationStrategy = null;
-        InterfaceRegistrationStrategy? interfaceRegistrationStrategy = null;
-        
-        var genericServiceTypes = GetValuesFromGenericTypes(attribute);
-        
-        foreach (var genericServiceType in genericServiceTypes)
-        {
-            serviceTypes.Add(genericServiceType);
-        }
 
         foreach (var parameter in attribute.NamedArguments)
         {
@@ -129,32 +280,18 @@ public class RegistrationSourceGenerator
             if (string.IsNullOrEmpty(name) || value == null)
                 continue;
 
-            if (attributeClass?.IsGenericType == false && name == "ServiceType")
-            {
-                serviceTypes.Add(value.ToString());
-            }
-            else if (attributeClass?.IsGenericType == false && name == "ImplementationType")
-            {
-                implementationType = value.ToString();
-            }
-            else if (name == "Duplicate")
+            if (name == "DuplicateRegistrationStrategy")
             {
                 duplicateRegistrationStrategy = ParseEnum<DuplicateRegistrationStrategy>(value);
             }
-            else if (name == "Registration")
-            {
-                interfaceRegistrationStrategy = ParseEnum<InterfaceRegistrationStrategy>(value);
-            }
         }
 
-        return (serviceTypes, implementationType, duplicateRegistrationStrategy, interfaceRegistrationStrategy);
+        return duplicateRegistrationStrategy;
     }
 
-    private static IEnumerable<string> GetValuesFromGenericTypes(AttributeData attribute)
+    private static string? GetServiceTypeFromGenericTypes(AttributeData attribute)
     {
         var attributeClass = attribute.AttributeClass;
-
-        var serviceTypes = new HashSet<string>();
 
         if (attributeClass?.IsGenericType == true && attributeClass.TypeArguments.Length == attributeClass.TypeParameters.Length)
         {
@@ -166,73 +303,108 @@ public class RegistrationSourceGenerator
                 switch (typeParameter.Name)
                 {
                     case "TService":
-                        serviceTypes.Add(typeArgument.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+                        return typeArgument.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
                         break;
                 }
             }
         }
 
-        return serviceTypes;
+        return null;
     }
 
-    private static TEnum? ParseEnum<TEnum>(object value)
-        where TEnum : struct, Enum =>
-        value switch
-        {
-            int numberValue    => Enum.IsDefined(typeof(TEnum), numberValue) ? (TEnum)Enum.ToObject(typeof(TEnum), numberValue) : null,
-            string stringValue => Enum.TryParse<TEnum>(stringValue, out var strategy) ? strategy : null,
-            _                  => null
-        };
-
-    private static bool IsInterfaceRegistrationStrategySelfWithInterfaces(InterfaceRegistrationStrategy? interfaceRegistrationStrategy, string? implementationType, IEnumerable<string> serviceTypes) =>
-        interfaceRegistrationStrategy == null && implementationType == null && !serviceTypes.Any();
-
-    private static bool IsImplementationTypeMissing(string? implementationType) =>
-        implementationType.IsNullOrWhiteSpace();
-
-    private static bool IsRegisterAllInterfaces(InterfaceRegistrationStrategy? interfaceRegistrationStrategy) =>
-        interfaceRegistrationStrategy is InterfaceRegistrationStrategy.ImplementedInterfaces or InterfaceRegistrationStrategy.SelfWithInterfaces;
-
-    private static bool IsSelfRegistration(InterfaceRegistrationStrategy? interfaceRegistrationStrategy, ICollection<string> serviceTypes) =>
-        interfaceRegistrationStrategy is InterfaceRegistrationStrategy.Self or InterfaceRegistrationStrategy.SelfWithInterfaces || serviceTypes.Count == 0;
-
-    private static bool IsRegisterAsAttribute(AttributeData attribute, out RegistrationLifetime registrationLifetime)
+    private static bool IsTransientAttribute(AttributeData attribute)
     {
-        if (IsTransientAttribute(attribute))
+        var attributeAttributeClass = attribute.AttributeClass;
+        if (attributeAttributeClass == null)
         {
-            registrationLifetime = RegistrationLifetime.Transient;
-            return true;
+            return false;
         }
 
-        if (IsScopedAttribute(attribute))
-        {
-            registrationLifetime = RegistrationLifetime.Scoped;
-            return true;
-        }
-
-        if (IsSingletonAttribute(attribute))
-        {
-            registrationLifetime = RegistrationLifetime.Singleton;
-            return true;
-        }
-
-        registrationLifetime = RegistrationLifetime.Transient;
-
-        return false;
+        return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransient") &&
+               attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("Attribute");
     }
 
-    private static bool IsTransientAttribute(AttributeData attribute) =>
-        attribute.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
-                 .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransientAttribute")
-        ?? false;
+    private static bool IsScopedAttribute(AttributeData attribute)
+    {
+        var attributeAttributeClass = attribute.AttributeClass;
+        if (attributeAttributeClass == null)
+        {
+            return false;
+        }
 
-    private static bool IsScopedAttribute(AttributeData attribute) =>
-        attribute.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
-                 .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScopedAttribute")
-        ?? false;
+        return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScoped") &&
+               attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("Attribute");
+    }
 
-    private static bool IsSingletonAttribute(AttributeData attribute) =>
-        attribute.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
-                 .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingletonAttribute")
-        ?? false;
+    private static bool IsSingletonAttribute(AttributeData attribute)
+    {
+        var attributeAttributeClass = attribute.AttributeClass;
+        if (attributeAttributeClass == null)
+        {
+            return false;
+        }
+
+        return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingleton") &&
+               attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("Attribute");
+    }
+
+
+
+    private static bool IsAsSelfAttribute(AttributeData attribute)
+    {
+        var attributeAttributeClass = attribute.AttributeClass;
+        if (attributeAttributeClass == null)
+        {
+            return false;
+        }
+
+        return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("AsSelfAttribute");
+    }
+
+    private static bool IsAsGenericTypeAttribute(AttributeData attribute)
+    {
+        var attributeAttributeClass = attribute.AttributeClass;
+        if (attributeAttributeClass == null)
+        {
+            return false;
+        }
+
+        return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                      .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransient.AsAttribute") ||
+               attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScoped.AsAttribute") ||
+               attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingleton.AsAttribute");
+    }
+
+    private static bool IsAsImplementedInterfacesAttribute(AttributeData attribute)
+    {
+        var attributeAttributeClass = attribute.AttributeClass;
+        if (attributeAttributeClass == null)
+        {
+            return false;
+        }
+
+        return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("AsImplementedInterfacesAttribute");
+    }
+
+    private static bool IsAsImplementedInterfacesAndSelfAttribute(AttributeData attribute)
+    {
+        var attributeAttributeClass = attribute.AttributeClass;
+        if (attributeAttributeClass == null)
+        {
+            return false;
+        }
+
+        return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("AsImplementedInterfacesAndSelfAttribute");
+    }
+
+    private static bool IsAsOpenGenericAttribute(AttributeData attribute)
+    {
+        var attributeAttributeClass = attribute.AttributeClass;
+        if (attributeAttributeClass == null)
+        {
+            return false;
+        }
+
+        return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("AsOpenGenericAttribute");
+    }
 }

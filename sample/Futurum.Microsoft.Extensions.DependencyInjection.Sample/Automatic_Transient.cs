@@ -1,6 +1,6 @@
 namespace Futurum.Microsoft.Extensions.DependencyInjection.Sample;
 
 [RegisterAsTransient]
-public class AutomaticTransientService : IService1
+public class Automatic_Transient : IService1
 {
 }

@@ -62,4 +62,12 @@ public static class DiagnosticDescriptors
         "Futurum.Microsoft.Extensions.DependencyInjection.Generator",
         DiagnosticSeverity.Error,
         true);
+
+    public static readonly DiagnosticDescriptor RegistrationDefaultMustHaveOneInterfaceOnly = new(
+        "FMEDI0008",
+        "Registration, must only have 1 interface",
+        $"Class '{{0}}' has '{{1}}' interfaces.{Environment.NewLine} Class must only have 1 interface. Please use another registration method.",
+        "Futurum.Microsoft.Extensions.DependencyInjection.Generator",
+        DiagnosticSeverity.Error,
+        true);
 }
