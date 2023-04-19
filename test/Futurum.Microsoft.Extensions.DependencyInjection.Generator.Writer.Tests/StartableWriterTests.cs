@@ -5,10 +5,10 @@ using VerifyXunit;
 
 using Xunit;
 
-namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests;
+namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator.Writer.Tests;
 
 [UsesVerify]
-public class StartableCodeGeneratorTests
+public class StartableWriterTests
 {
     [Fact]
     public Task Static()
@@ -20,7 +20,7 @@ public class StartableCodeGeneratorTests
                 true)
         };
 
-        var result = StartableWriter.Write(nameof(StartableCodeGeneratorTests), startableData, true);
+        var result = StartableWriter.Write(nameof(StartableWriterTests), startableData, true);
 
         return Verifier.Verify(result).UseDirectory("Snapshots");
     }
@@ -35,7 +35,7 @@ public class StartableCodeGeneratorTests
                 false)
         };
 
-        var result = StartableWriter.Write(nameof(StartableCodeGeneratorTests), startableData, true);
+        var result = StartableWriter.Write(nameof(StartableWriterTests), startableData, true);
 
         return Verifier.Verify(result).UseDirectory("Snapshots");
     }

@@ -3,11 +3,11 @@
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static partial class RegistrationCodeGeneratorSingletonTestsExtensions
+    public static partial class RegistrationWriterSingletonTestsExtensions
     {
         private static global::Microsoft.Extensions.DependencyInjection.IServiceCollection RegisterRegistrations(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection)
         {
-            global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAdd(
+            global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.Replace(
                 serviceCollection,
                 global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Describe(
                     typeof(global::Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1),

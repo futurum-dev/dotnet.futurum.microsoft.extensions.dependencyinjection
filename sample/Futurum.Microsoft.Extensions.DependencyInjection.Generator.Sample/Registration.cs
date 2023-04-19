@@ -41,7 +41,7 @@ public class ScopedService_AsSelf : IService2
 {
 }
 
-[RegisterAsTransient.As<IService1>]
+[RegisterAsScoped.As<IService1>]
 public class ScopedService_As : IService1
 {
 }
@@ -61,7 +61,7 @@ public class SingletonService_AsSelf : IService3
 {
 }
 
-[RegisterAsTransient.As<IService1>]
+[RegisterAsSingleton.As<IService1>]
 public class SingletonService_As : IService1
 {
 }

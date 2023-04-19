@@ -3,7 +3,7 @@
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static partial class RegistrationCodeGeneratorTransientTestsExtensions
+    public static partial class RegistrationWriterScopedTestsExtensions
     {
         private static global::Microsoft.Extensions.DependencyInjection.IServiceCollection RegisterRegistrations(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection)
         {
@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Describe(
                     typeof(global::Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1),
                     typeof(global::Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1), 
-                    global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Transient
+                    global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped
                 )
             );
 
