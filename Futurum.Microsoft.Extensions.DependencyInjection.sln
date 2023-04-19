@@ -27,7 +27,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Futurum.Microsoft.Extension
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Sample", "sample\Futurum.Microsoft.Extensions.DependencyInjection.Generator.Sample\Futurum.Microsoft.Extensions.DependencyInjection.Generator.Sample.csproj", "{0A9F5652-EF5A-45AD-86A9-29702F426944}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests", "test\Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests\Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.csproj", "{45B99B38-E5F5-47FF-88AE-BC48E7EA2616}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Writer.Tests", "test\Futurum.Microsoft.Extensions.DependencyInjection.Generator.Writer.Tests\Futurum.Microsoft.Extensions.DependencyInjection.Generator.Writer.Tests.csproj", "{45B99B38-E5F5-47FF-88AE-BC48E7EA2616}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests", "test\Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests\Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.csproj", "{818C514E-CF55-4013-861E-85C5F919C4B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,11 +61,16 @@ Global
 		{45B99B38-E5F5-47FF-88AE-BC48E7EA2616}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45B99B38-E5F5-47FF-88AE-BC48E7EA2616}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45B99B38-E5F5-47FF-88AE-BC48E7EA2616}.Release|Any CPU.Build.0 = Release|Any CPU
+		{818C514E-CF55-4013-861E-85C5F919C4B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{818C514E-CF55-4013-861E-85C5F919C4B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{818C514E-CF55-4013-861E-85C5F919C4B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{818C514E-CF55-4013-861E-85C5F919C4B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CAF8E145-BD58-4000-96E4-51390C7407FF} = {3BC45DF0-972E-4400-80FC-442F6B3084CD}
 		{062C6431-11B5-4927-90F4-FB928C59CE24} = {D89EB769-9F2C-443F-9821-012D173DA16A}
 		{0A9F5652-EF5A-45AD-86A9-29702F426944} = {D89EB769-9F2C-443F-9821-012D173DA16A}
 		{45B99B38-E5F5-47FF-88AE-BC48E7EA2616} = {3BC45DF0-972E-4400-80FC-442F6B3084CD}
+		{818C514E-CF55-4013-861E-85C5F919C4B7} = {3BC45DF0-972E-4400-80FC-442F6B3084CD}
 	EndGlobalSection
 EndGlobal

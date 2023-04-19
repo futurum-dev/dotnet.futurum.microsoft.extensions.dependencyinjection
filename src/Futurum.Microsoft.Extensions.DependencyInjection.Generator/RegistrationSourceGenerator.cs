@@ -321,7 +321,7 @@ public class RegistrationSourceGenerator
         }
 
         return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransient") &&
-               attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("Attribute");
+               attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Replace("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransient", string.Empty).Contains("Attribute");
     }
 
     private static bool IsScopedAttribute(AttributeData attribute)
@@ -333,7 +333,7 @@ public class RegistrationSourceGenerator
         }
 
         return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScoped") &&
-               attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("Attribute");
+               attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Replace("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScoped", string.Empty).Contains("Attribute");
     }
 
     private static bool IsSingletonAttribute(AttributeData attribute)
@@ -345,7 +345,7 @@ public class RegistrationSourceGenerator
         }
 
         return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingleton") &&
-               attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("Attribute");
+               attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Replace("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingleton", string.Empty).Contains("Attribute");
     }
 
 

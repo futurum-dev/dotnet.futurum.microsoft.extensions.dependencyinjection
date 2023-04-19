@@ -3,7 +3,7 @@
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static partial class ModuleCodeGeneratorTestsExtensions
+    public static partial class ModuleWriterTestsExtensions
     {
         private static global::Microsoft.Extensions.DependencyInjection.IServiceCollection RegisterModules(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection)
         {

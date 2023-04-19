@@ -5,13 +5,13 @@ using VerifyXunit;
 
 using Xunit;
 
-namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests;
+namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator.Writer.Tests;
 
 [UsesVerify]
-public class RegistrationCodeGeneratorScopedTests
+public class RegistrationWriterScopedTests
 {
     [Fact]
-    public Task Scoped_Try()
+    public Task Try()
     {
         var registrationData = new List<RegistrationDatum>
         {
@@ -21,13 +21,13 @@ public class RegistrationCodeGeneratorScopedTests
                 DuplicateRegistrationStrategy.Try)
         };
 
-        var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorScopedTests), registrationData, true);
+        var result = RegistrationWriter.Write(nameof(RegistrationWriterScopedTests), registrationData, true);
 
         return Verifier.Verify(result).UseDirectory("Snapshots");
     }
 
     [Fact]
-    public Task Scoped_Add()
+    public Task Add()
     {
         var registrationData = new List<RegistrationDatum>
         {
@@ -37,13 +37,13 @@ public class RegistrationCodeGeneratorScopedTests
                 DuplicateRegistrationStrategy.Add)
         };
 
-        var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorScopedTests), registrationData, true);
+        var result = RegistrationWriter.Write(nameof(RegistrationWriterScopedTests), registrationData, true);
 
         return Verifier.Verify(result).UseDirectory("Snapshots");
     }
 
     [Fact]
-    public Task Scoped_Replace()
+    public Task Replace()
     {
         var registrationData = new List<RegistrationDatum>
         {
@@ -53,7 +53,7 @@ public class RegistrationCodeGeneratorScopedTests
                 DuplicateRegistrationStrategy.Replace)
         };
 
-        var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorScopedTests), registrationData, true);
+        var result = RegistrationWriter.Write(nameof(RegistrationWriterScopedTests), registrationData, true);
 
         return Verifier.Verify(result).UseDirectory("Snapshots");
     }

@@ -5,13 +5,13 @@ using VerifyXunit;
 
 using Xunit;
 
-namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests;
+namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator.Writer.Tests;
 
 [UsesVerify]
-public class RegistrationCodeGeneratorSingletonTests
+public class RegistrationWriterSingletonTests
 {
     [Fact]
-    public Task Singleton_Try()
+    public Task Try()
     {
         var registrationData = new List<RegistrationDatum>
         {
@@ -21,13 +21,13 @@ public class RegistrationCodeGeneratorSingletonTests
                 DuplicateRegistrationStrategy.Try)
         };
 
-        var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorSingletonTests), registrationData, true);
+        var result = RegistrationWriter.Write(nameof(RegistrationWriterSingletonTests), registrationData, true);
 
         return Verifier.Verify(result).UseDirectory("Snapshots");
     }
 
     [Fact]
-    public Task Singleton_Add()
+    public Task Add()
     {
         var registrationData = new List<RegistrationDatum>
         {
@@ -37,13 +37,13 @@ public class RegistrationCodeGeneratorSingletonTests
                 DuplicateRegistrationStrategy.Add)
         };
 
-        var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorSingletonTests), registrationData, true);
+        var result = RegistrationWriter.Write(nameof(RegistrationWriterSingletonTests), registrationData, true);
 
         return Verifier.Verify(result).UseDirectory("Snapshots");
     }
 
     [Fact]
-    public Task Singleton_Replace()
+    public Task Replace()
     {
         var registrationData = new List<RegistrationDatum>
         {
@@ -53,7 +53,7 @@ public class RegistrationCodeGeneratorSingletonTests
                 DuplicateRegistrationStrategy.Replace)
         };
 
-        var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorSingletonTests), registrationData, true);
+        var result = RegistrationWriter.Write(nameof(RegistrationWriterSingletonTests), registrationData, true);
 
         return Verifier.Verify(result).UseDirectory("Snapshots");
     }
