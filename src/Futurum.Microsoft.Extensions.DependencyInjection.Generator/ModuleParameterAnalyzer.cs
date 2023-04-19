@@ -25,10 +25,10 @@ public class ModuleParameterAnalyzer : DiagnosticAnalyzer
         if (context.Symbol is not IMethodSymbol methodSymbol)
             return;
 
-        if (!Diagnostics.Module.HasAttribute(methodSymbol))
+        if (!ModuleDiagnostics.HasAttribute(methodSymbol))
             return;
         
-        var diagnostics = Diagnostics.Module.InvalidParameter.Check(methodSymbol);
+        var diagnostics = ModuleDiagnostics.InvalidParameter.Check(methodSymbol);
 
         foreach (var diagnostic in diagnostics)
         {

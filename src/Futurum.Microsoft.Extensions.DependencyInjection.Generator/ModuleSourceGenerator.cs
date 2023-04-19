@@ -35,10 +35,10 @@ public class ModuleSourceGenerator
         if (methodSymbol is null)
             return null;
 
-        if (!Diagnostics.Module.HasAttribute(methodSymbol))
+        if (!ModuleDiagnostics.HasAttribute(methodSymbol))
             return null;
 
-        var diagnostics = Diagnostics.Module.InvalidParameter.Check(methodSymbol);
+        var diagnostics = ModuleDiagnostics.InvalidParameter.Check(methodSymbol);
         if (diagnostics.Any())
             return new ModuleContext(diagnostics: diagnostics);
 

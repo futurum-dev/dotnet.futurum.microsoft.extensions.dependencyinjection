@@ -24,7 +24,7 @@ public class ModuleNonEmptyConstructorAnalyzer : DiagnosticAnalyzer
         if (context.Symbol is not IMethodSymbol methodSymbol)
             return;
 
-        if (!Diagnostics.Module.HasAttribute(methodSymbol))
+        if (!ModuleDiagnostics.HasAttribute(methodSymbol))
             return;
 
         var classSymbol = context.Compilation.GetTypeByMetadataName(methodSymbol.ContainingType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
@@ -32,7 +32,7 @@ public class ModuleNonEmptyConstructorAnalyzer : DiagnosticAnalyzer
         if (classSymbol == null)
             return;
 
-        var diagnostics = Diagnostics.Module.NonEmptyConstructor.Check(methodSymbol, methodSymbol.ContainingType);
+        var diagnostics = ModuleDiagnostics.NonEmptyConstructor.Check(methodSymbol, methodSymbol.ContainingType);
 
         foreach (var diagnostic in diagnostics)
         {

@@ -35,7 +35,7 @@ public class StartableSourceGenerator
         if (methodSymbol is null)
             return null;
 
-        if (!Diagnostics.Startable.HasAttribute(methodSymbol))
+        if (!StartableDiagnostics.HasAttribute(methodSymbol))
             return null;
 
         var startableDatum = new StartableDatum(methodSymbol.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
