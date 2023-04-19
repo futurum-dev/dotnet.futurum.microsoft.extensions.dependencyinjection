@@ -24,13 +24,13 @@ public class RegistrationServiceTypeNotImplementedByClassAnalyzer : DiagnosticAn
         if (context.Symbol is not INamedTypeSymbol classSymbol)
             return;
 
-        var attributes = Diagnostics.Registration.GetAttributes(classSymbol);
+        var attributes = RegistrationDiagnostics.GetAttributes(classSymbol);
         if (!attributes.Any())
             return;
 
         foreach (var attribute in attributes)
         {
-            var diagnostics = Diagnostics.Registration.ServiceTypeNotImplementedByClass.Check(classSymbol, attribute);
+            var diagnostics = RegistrationDiagnostics.ServiceTypeNotImplementedByClass.Check(classSymbol, attribute);
 
             foreach (var diagnostic in diagnostics)
             {

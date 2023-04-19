@@ -247,3 +247,4 @@ var result = serviceProvider.TryGetService<ITestService>();
 - FMEDI0006 - Non void method found on Module
 - FMEDI0007 - Register ServiceType not implemented by class
 - FMEDI0008 - Registration, must only have 1 interface
+- FMEDI1000 - Registration information

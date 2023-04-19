@@ -24,13 +24,13 @@ public class RegistrationDefaultMustHaveOneInterfaceOnlyAnalyzer : DiagnosticAna
         if (context.Symbol is not INamedTypeSymbol classSymbol)
             return;
 
-        var attributes = Diagnostics.Registration.GetAttributes(classSymbol);
+        var attributes = RegistrationDiagnostics.GetAttributes(classSymbol);
         if (!attributes.Any())
             return;
 
         foreach (var attribute in attributes)
         {
-            var diagnostics = Diagnostics.Registration.RegistrationDefaultMustHaveOneInterfaceOnly.Check(classSymbol, attribute);
+            var diagnostics = RegistrationDiagnostics.DefaultMustHaveOneInterfaceOnly.Check(classSymbol, attribute);
 
             foreach (var diagnostic in diagnostics)
             {

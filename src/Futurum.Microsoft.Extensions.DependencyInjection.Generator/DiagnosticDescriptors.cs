@@ -70,4 +70,12 @@ public static class DiagnosticDescriptors
         "Futurum.Microsoft.Extensions.DependencyInjection.Generator",
         DiagnosticSeverity.Error,
         true);
+
+    public static readonly DiagnosticDescriptor RegistrationInformation = new(
+        "FMEDI1000",
+        "Registration information",
+        $"'{{0}}' to '{{1}}' via '{{2}}' as '{{3}}'",
+        "Futurum.Microsoft.Extensions.DependencyInjection.Generator",
+        DiagnosticSeverity.Info,
+        true);
 }

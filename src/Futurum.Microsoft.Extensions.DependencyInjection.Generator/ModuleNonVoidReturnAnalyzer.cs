@@ -24,10 +24,10 @@ public class ModuleNonVoidReturnAnalyzer : DiagnosticAnalyzer
         if (context.Symbol is not IMethodSymbol methodSymbol)
             return;
 
-        if (!Diagnostics.Module.HasAttribute(methodSymbol))
+        if (!ModuleDiagnostics.HasAttribute(methodSymbol))
             return;
 
-        var diagnostics = Diagnostics.Module.NonVoidReturn.Check(methodSymbol);
+        var diagnostics = ModuleDiagnostics.NonVoidReturn.Check(methodSymbol);
 
         foreach (var diagnostic in diagnostics)
         {

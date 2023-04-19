@@ -24,10 +24,10 @@ public class StartableNonAsyncMethodAnalyzer : DiagnosticAnalyzer
         if (context.Symbol is not IMethodSymbol methodSymbol)
             return;
 
-        if (!Diagnostics.Startable.HasAttribute(methodSymbol))
+        if (!StartableDiagnostics.HasAttribute(methodSymbol))
             return;
 
-        var diagnostics = Diagnostics.Startable.StartableNonAsyncMethod.Check(methodSymbol);
+        var diagnostics = StartableDiagnostics.StartableNonAsyncMethod.Check(methodSymbol);
 
         foreach (var diagnostic in diagnostics)
         {

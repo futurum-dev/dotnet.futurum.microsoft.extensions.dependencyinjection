@@ -24,7 +24,7 @@ public class StartableNonEmptyConstructorAnalyzer : DiagnosticAnalyzer
         if (context.Symbol is not IMethodSymbol methodSymbol)
             return;
 
-        if (!Diagnostics.Startable.HasAttribute(methodSymbol))
+        if (!StartableDiagnostics.HasAttribute(methodSymbol))
             return;
 
         var classSymbol = context.Compilation.GetTypeByMetadataName(methodSymbol.ContainingType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
@@ -32,7 +32,7 @@ public class StartableNonEmptyConstructorAnalyzer : DiagnosticAnalyzer
         if (classSymbol == null)
             return;
 
-        var diagnostics = Diagnostics.Startable.NonEmptyConstructor.Check(methodSymbol, methodSymbol.ContainingType);
+        var diagnostics = StartableDiagnostics.NonEmptyConstructor.Check(methodSymbol, methodSymbol.ContainingType);
 
         foreach (var diagnostic in diagnostics)
         {
