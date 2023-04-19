@@ -6,10 +6,10 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class RegistrationServiceTypeNotImplementedByClassAnalyzer : DiagnosticAnalyzer
+public class RegistrationDefaultMustHaveOneInterfaceOnlyAnalyzer : DiagnosticAnalyzer
 {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
-        = ImmutableArray.Create(DiagnosticDescriptors.RegistrationServiceTypeNotImplementedByClass);
+        = ImmutableArray.Create(DiagnosticDescriptors.RegistrationDefaultMustHaveOneInterfaceOnly);
 
     public override void Initialize(AnalysisContext context)
     {
@@ -30,7 +30,7 @@ public class RegistrationServiceTypeNotImplementedByClassAnalyzer : DiagnosticAn
 
         foreach (var attribute in attributes)
         {
-            var diagnostics = Diagnostics.Registration.ServiceTypeNotImplementedByClass.Check(classSymbol, attribute);
+            var diagnostics = Diagnostics.Registration.RegistrationDefaultMustHaveOneInterfaceOnly.Check(classSymbol, attribute);
 
             foreach (var diagnostic in diagnostics)
             {

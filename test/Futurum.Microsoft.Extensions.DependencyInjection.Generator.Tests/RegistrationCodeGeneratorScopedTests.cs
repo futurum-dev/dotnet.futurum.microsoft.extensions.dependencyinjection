@@ -11,15 +11,14 @@ namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests;
 public class RegistrationCodeGeneratorScopedTests
 {
     [Fact]
-    public Task Single_Interface()
+    public Task Scoped_Try()
     {
         var registrationData = new List<RegistrationDatum>
         {
-            new(new[] { "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1" },
+            new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
-                RegistrationLifetime.Scoped, 
-                DuplicateRegistrationStrategy.Try, 
-                InterfaceRegistrationStrategy.SelfWithInterfaces)
+                RegistrationLifetime.Scoped,
+                DuplicateRegistrationStrategy.Try)
         };
 
         var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorScopedTests), registrationData, true);
@@ -28,20 +27,14 @@ public class RegistrationCodeGeneratorScopedTests
     }
 
     [Fact]
-    public Task Multiple_Interface()
+    public Task Scoped_Add()
     {
         var registrationData = new List<RegistrationDatum>
         {
-            new(new[]
-                {
-                    "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service",
-                    "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
-                    "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService2",
-                },
-                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service",
-                RegistrationLifetime.Scoped, 
-                DuplicateRegistrationStrategy.Try, 
-                InterfaceRegistrationStrategy.SelfWithInterfaces)
+            new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
+                RegistrationLifetime.Scoped,
+                DuplicateRegistrationStrategy.Add)
         };
 
         var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorScopedTests), registrationData, true);
@@ -50,49 +43,14 @@ public class RegistrationCodeGeneratorScopedTests
     }
 
     [Fact]
-    public Task Self()
+    public Task Scoped_Replace()
     {
         var registrationData = new List<RegistrationDatum>
         {
-            new(new[] { "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1" },
+            new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
-                RegistrationLifetime.Scoped, 
-                DuplicateRegistrationStrategy.Try, 
-                InterfaceRegistrationStrategy.Self)
-        };
-
-        var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorScopedTests), registrationData, true);
-
-        return Verifier.Verify(result).UseDirectory("Snapshots");
-    }
-
-    [Fact]
-    public Task Single_Interface_Append()
-    {
-        var registrationData = new List<RegistrationDatum>
-        {
-            new(new[] { "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1" },
-                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
-                RegistrationLifetime.Scoped, 
-                DuplicateRegistrationStrategy.Add, 
-                InterfaceRegistrationStrategy.SelfWithInterfaces)
-        };
-
-        var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorScopedTests), registrationData, true);
-
-        return Verifier.Verify(result).UseDirectory("Snapshots");
-    }
-
-    [Fact]
-    public Task Single_Interface_Replace()
-    {
-        var registrationData = new List<RegistrationDatum>
-        {
-            new(new[] { "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1" },
-                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
-                RegistrationLifetime.Scoped, 
-                DuplicateRegistrationStrategy.Replace,
-                InterfaceRegistrationStrategy.SelfWithInterfaces)
+                RegistrationLifetime.Scoped,
+                DuplicateRegistrationStrategy.Replace)
         };
 
         var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorScopedTests), registrationData, true);

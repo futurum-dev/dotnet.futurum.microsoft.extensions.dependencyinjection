@@ -6,7 +6,7 @@ public static class Diagnostics
 {
     public static class Registration
     {
-        public static IEnumerable<AttributeData> HasAttribute(INamedTypeSymbol classSymbol)
+        public static IEnumerable<AttributeData> GetAttributes(INamedTypeSymbol classSymbol)
         {
             return classSymbol.GetAttributes().Where(IsRegistrationAttribute);
 
@@ -17,13 +17,23 @@ public static class Diagnostics
                 if (attributeClass == null)
                     return false;
 
-                return attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
-                                     .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransientAttribute") ||
-                       attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
-                                     .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScopedAttribute") ||
-                       attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
-                                     .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingletonAttribute");
+                return attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransient") ||
+                       attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScoped") ||
+                       attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingleton");
             }
+        }
+        
+        public static bool IsDefaultAttribute(AttributeData attribute)
+        {
+            var attributeAttributeClass = attribute.AttributeClass;
+            if (attributeAttributeClass == null)
+            {
+                return false;
+            }
+
+            return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScopedAttribute") ||
+                   attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingletonAttribute") ||
+                   attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransientAttribute");
         }
 
         public static class ServiceTypeNotImplementedByClass
@@ -67,6 +77,23 @@ public static class Diagnostics
                 }
 
                 return serviceType;
+            }
+        }
+
+        public static class RegistrationDefaultMustHaveOneInterfaceOnly
+        {
+            public static IEnumerable<Diagnostic> Check(INamedTypeSymbol classSymbol, AttributeData attributeData)
+            {
+                if(!IsDefaultAttribute(attributeData))
+                    yield break;
+
+                if(classSymbol.Interfaces.Length == 1)
+                    yield break;
+
+                yield return Diagnostic.Create(DiagnosticDescriptors.RegistrationDefaultMustHaveOneInterfaceOnly,
+                                               attributeData.ApplicationSyntaxReference?.GetSyntax().GetLocation(),
+                                               classSymbol.Name,
+                                               classSymbol.AllInterfaces.Length);
             }
         }
     }

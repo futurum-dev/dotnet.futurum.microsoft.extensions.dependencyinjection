@@ -11,15 +11,14 @@ namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests;
 public class RegistrationCodeGeneratorTransientTests
 {
     [Fact]
-    public Task Single_Interface()
+    public Task Transient_Try()
     {
         var registrationData = new List<RegistrationDatum>
         {
-            new(new[] { "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1" },
+            new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
                 RegistrationLifetime.Transient,
-                DuplicateRegistrationStrategy.Try, 
-                InterfaceRegistrationStrategy.SelfWithInterfaces)
+                DuplicateRegistrationStrategy.Try)
         };
 
         var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorTransientTests), registrationData, true);
@@ -28,20 +27,14 @@ public class RegistrationCodeGeneratorTransientTests
     }
 
     [Fact]
-    public Task Multiple_Interface()
+    public Task Transient_Add()
     {
         var registrationData = new List<RegistrationDatum>
         {
-            new(new[]
-                {
-                    "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service",
-                    "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
-                    "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService2",
-                },
-                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service",
+            new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
                 RegistrationLifetime.Transient,
-                DuplicateRegistrationStrategy.Try, 
-                InterfaceRegistrationStrategy.SelfWithInterfaces)
+                DuplicateRegistrationStrategy.Add)
         };
 
         var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorTransientTests), registrationData, true);
@@ -50,49 +43,14 @@ public class RegistrationCodeGeneratorTransientTests
     }
 
     [Fact]
-    public Task Self()
+    public Task Transient_Replace()
     {
         var registrationData = new List<RegistrationDatum>
         {
-            new(new[] { "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1" },
+            new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
                 RegistrationLifetime.Transient,
-                DuplicateRegistrationStrategy.Try,
-                InterfaceRegistrationStrategy.Self)
-        };
-
-        var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorTransientTests), registrationData, true);
-
-        return Verifier.Verify(result).UseDirectory("Snapshots");
-    }
-
-    [Fact]
-    public Task Single_Interface_Append()
-    {
-        var registrationData = new List<RegistrationDatum>
-        {
-            new(new[] { "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1" },
-                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
-                RegistrationLifetime.Transient,
-                DuplicateRegistrationStrategy.Add,
-                InterfaceRegistrationStrategy.SelfWithInterfaces)
-        };
-
-        var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorTransientTests), registrationData, true);
-
-        return Verifier.Verify(result).UseDirectory("Snapshots");
-    }
-
-    [Fact]
-    public Task Single_Interface_Replace()
-    {
-        var registrationData = new List<RegistrationDatum>
-        {
-            new(new[] { "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1" },
-                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
-                RegistrationLifetime.Transient,
-                DuplicateRegistrationStrategy.Replace,
-                InterfaceRegistrationStrategy.SelfWithInterfaces)
+                DuplicateRegistrationStrategy.Replace)
         };
 
         var result = RegistrationWriter.Write(nameof(RegistrationCodeGeneratorTransientTests), registrationData, true);
