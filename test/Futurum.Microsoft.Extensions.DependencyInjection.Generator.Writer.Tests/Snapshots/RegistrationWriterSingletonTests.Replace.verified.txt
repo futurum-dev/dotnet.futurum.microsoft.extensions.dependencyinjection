@@ -3,7 +3,7 @@
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static partial class RegistrationWriterSingletonTestsExtensions
+    public static partial class RegistrationWriterSingletonTestsFuturumMicrosoftExtensionsDependencyInjectionExtensions
     {
         private static global::Microsoft.Extensions.DependencyInjection.IServiceCollection RegisterRegistrations(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection)
         {

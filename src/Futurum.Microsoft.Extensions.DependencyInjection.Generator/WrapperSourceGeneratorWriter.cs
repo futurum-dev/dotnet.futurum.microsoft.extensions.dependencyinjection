@@ -35,7 +35,7 @@ public static class WrapperSourceGeneratorWriter
         }
 
         codeBuilder
-            .AppendLine($"public static partial class {className}Extensions")
+            .AppendLine($"public static partial class {className}FuturumMicrosoftExtensionsDependencyInjectionExtensions")
             .AppendLine("{")
             .IncrementIndent();
 

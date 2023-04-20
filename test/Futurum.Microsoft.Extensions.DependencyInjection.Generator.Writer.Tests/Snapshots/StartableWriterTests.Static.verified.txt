@@ -3,7 +3,7 @@
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static partial class StartableWriterTestsExtensions
+    public static partial class StartableWriterTestsFuturumMicrosoftExtensionsDependencyInjectionExtensions
     {
         private static global::Microsoft.Extensions.DependencyInjection.IServiceCollection RegisterStartables(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection)
         {
