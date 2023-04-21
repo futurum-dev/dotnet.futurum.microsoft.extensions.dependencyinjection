@@ -18,7 +18,9 @@ public class RegistrationWriterScopedTests
             new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
                 RegistrationLifetime.Scoped,
-                DuplicateRegistrationStrategy.Try)
+                DuplicateRegistrationStrategy.Try,
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1")
         };
 
         var result = RegistrationWriter.Write(nameof(RegistrationWriterScopedTests), registrationData, true);
@@ -34,7 +36,9 @@ public class RegistrationWriterScopedTests
             new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
                 RegistrationLifetime.Scoped,
-                DuplicateRegistrationStrategy.Add)
+                DuplicateRegistrationStrategy.Add,
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1")
         };
 
         var result = RegistrationWriter.Write(nameof(RegistrationWriterScopedTests), registrationData, true);
@@ -50,7 +54,9 @@ public class RegistrationWriterScopedTests
             new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
                 RegistrationLifetime.Scoped,
-                DuplicateRegistrationStrategy.Replace)
+                DuplicateRegistrationStrategy.Replace,
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1")
         };
 
         var result = RegistrationWriter.Write(nameof(RegistrationWriterScopedTests), registrationData, true);

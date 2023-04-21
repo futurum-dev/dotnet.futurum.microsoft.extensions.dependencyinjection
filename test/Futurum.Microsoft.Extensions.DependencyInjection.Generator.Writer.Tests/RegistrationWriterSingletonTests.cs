@@ -18,7 +18,9 @@ public class RegistrationWriterSingletonTests
             new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
                 RegistrationLifetime.Singleton,
-                DuplicateRegistrationStrategy.Try)
+                DuplicateRegistrationStrategy.Try,
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1")
         };
 
         var result = RegistrationWriter.Write(nameof(RegistrationWriterSingletonTests), registrationData, true);
@@ -34,7 +36,9 @@ public class RegistrationWriterSingletonTests
             new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
                 RegistrationLifetime.Singleton,
-                DuplicateRegistrationStrategy.Add)
+                DuplicateRegistrationStrategy.Add,
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1")
         };
 
         var result = RegistrationWriter.Write(nameof(RegistrationWriterSingletonTests), registrationData, true);
@@ -50,7 +54,9 @@ public class RegistrationWriterSingletonTests
             new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
                 RegistrationLifetime.Singleton,
-                DuplicateRegistrationStrategy.Replace)
+                DuplicateRegistrationStrategy.Replace,
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1")
         };
 
         var result = RegistrationWriter.Write(nameof(RegistrationWriterSingletonTests), registrationData, true);

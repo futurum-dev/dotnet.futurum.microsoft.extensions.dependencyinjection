@@ -18,7 +18,9 @@ public class RegistrationWriterTransientTests
             new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
                 RegistrationLifetime.Transient,
-                DuplicateRegistrationStrategy.Try)
+                DuplicateRegistrationStrategy.Try,
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1")
         };
 
         var result = RegistrationWriter.Write(nameof(RegistrationWriterTransientTests), registrationData, true);
@@ -34,7 +36,9 @@ public class RegistrationWriterTransientTests
             new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
                 RegistrationLifetime.Transient,
-                DuplicateRegistrationStrategy.Add)
+                DuplicateRegistrationStrategy.Add,
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1")
         };
 
         var result = RegistrationWriter.Write(nameof(RegistrationWriterTransientTests), registrationData, true);
@@ -50,7 +54,9 @@ public class RegistrationWriterTransientTests
             new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
                 RegistrationLifetime.Transient,
-                DuplicateRegistrationStrategy.Replace)
+                DuplicateRegistrationStrategy.Replace,
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
+                "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1")
         };
 
         var result = RegistrationWriter.Write(nameof(RegistrationWriterTransientTests), registrationData, true);

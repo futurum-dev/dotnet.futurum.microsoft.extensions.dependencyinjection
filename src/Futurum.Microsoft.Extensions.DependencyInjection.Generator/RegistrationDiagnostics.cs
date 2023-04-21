@@ -101,7 +101,9 @@ public static class RegistrationDiagnostics
     {
         public static IEnumerable<RegistrationDatum> GetRegistrationData(IEnumerable<AttributeData> registrationAttributes, INamedTypeSymbol classSymbol)
         {
-            var implementedInterfaceNames = classSymbol.Interfaces.Select(implementedInterface => implementedInterface.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+            var implementedInterfaceNames = classSymbol.Interfaces
+                                                       .Select(implementedInterface => (fullyQualifiedFormat: implementedInterface.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+                                                                                        errorMessageFormat: implementedInterface.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
 
             foreach (var registrationAttribute in registrationAttributes)
             {
@@ -151,86 +153,107 @@ public static class RegistrationDiagnostics
             }
         }
 
-        private static RegistrationDatum Default(INamedTypeSymbol classSymbol, string implementedInterfaceName, AttributeData registrationAttribute)
+        private static RegistrationDatum Default(INamedTypeSymbol classSymbol, (string fullyQualifiedFormat, string errorMessageFormat) implementedInterfaceName, AttributeData registrationAttribute)
         {
-            var classTypeName = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var classTypeFullyQualifiedFormat = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var classTypeErrorMessageFormat = classSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
 
             var registrationLifetime = GetRegistrationLifetime(registrationAttribute);
 
             var duplicateRegistrationStrategy = GetDuplicateRegistrationStrategyFromAttribute(registrationAttribute) ?? DuplicateRegistrationStrategy.Try;
 
-            return new RegistrationDatum(implementedInterfaceName,
-                                         classTypeName,
+            return new RegistrationDatum(implementedInterfaceName.fullyQualifiedFormat,
+                                         classTypeFullyQualifiedFormat,
                                          registrationLifetime,
-                                         duplicateRegistrationStrategy);
+                                         duplicateRegistrationStrategy,
+                                         implementedInterfaceName.errorMessageFormat,
+                                         classTypeErrorMessageFormat);
         }
 
         private static RegistrationDatum AsSelf(INamedTypeSymbol classSymbol, AttributeData registrationAttribute)
         {
-            var classTypeName = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var classTypeFullyQualifiedFormat = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var classTypeErrorMessageFormat = classSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
 
             var registrationLifetime = GetRegistrationLifetime(registrationAttribute);
 
             var duplicateRegistrationStrategy = GetDuplicateRegistrationStrategyFromAttribute(registrationAttribute) ?? DuplicateRegistrationStrategy.Try;
 
-            return new RegistrationDatum(classTypeName,
-                                         classTypeName,
+            return new RegistrationDatum(classTypeFullyQualifiedFormat,
+                                         classTypeFullyQualifiedFormat,
                                          registrationLifetime,
-                                         duplicateRegistrationStrategy);
+                                         duplicateRegistrationStrategy,
+                                         classTypeErrorMessageFormat,
+                                         classTypeErrorMessageFormat);
         }
 
         private static RegistrationDatum As(INamedTypeSymbol classSymbol, AttributeData registrationAttribute)
         {
-            var classTypeName = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var classTypeFullyQualifiedFormat = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var classTypeErrorMessageFormat = classSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
 
-            var serviceType = GetServiceTypeFromGenericTypes(registrationAttribute);
+            var (serviceTypeFullyQualifiedFormat, serviceTypeErrorMessageFormat) = GetServiceTypeFromGenericTypes(registrationAttribute);
 
             var registrationLifetime = GetRegistrationLifetime(registrationAttribute);
 
             var duplicateRegistrationStrategy = GetDuplicateRegistrationStrategyFromAttribute(registrationAttribute) ?? DuplicateRegistrationStrategy.Try;
 
-            return new RegistrationDatum(serviceType,
-                                         classTypeName,
+            return new RegistrationDatum(serviceTypeFullyQualifiedFormat,
+                                         classTypeFullyQualifiedFormat,
                                          registrationLifetime,
-                                         duplicateRegistrationStrategy);
+                                         duplicateRegistrationStrategy,
+                                         serviceTypeErrorMessageFormat,
+                                         classTypeErrorMessageFormat);
         }
 
-        private static IEnumerable<RegistrationDatum> AsImplementedInterfaces(INamedTypeSymbol classSymbol, IEnumerable<string> implementedInterfaceNames, AttributeData registrationAttribute)
+        private static IEnumerable<RegistrationDatum> AsImplementedInterfaces(INamedTypeSymbol classSymbol,
+                                                                              IEnumerable<(string fullyQualifiedFormat, string errorMessageFormat)> implementedInterfaceNames,
+                                                                              AttributeData registrationAttribute)
         {
-            var classTypeName = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var classTypeFullyQualifiedFormat = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var classTypeErrorMessageFormat = classSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
 
             var registrationLifetime = GetRegistrationLifetime(registrationAttribute);
 
             var duplicateRegistrationStrategy = GetDuplicateRegistrationStrategyFromAttribute(registrationAttribute) ?? DuplicateRegistrationStrategy.Try;
 
-            foreach (var implementedInterfaceName in implementedInterfaceNames)
+            foreach (var (serviceTypeFullyQualifiedFormat, serviceTypeErrorMessageFormat) in implementedInterfaceNames)
             {
-                yield return new RegistrationDatum(implementedInterfaceName,
-                                                   classTypeName,
+                yield return new RegistrationDatum(serviceTypeFullyQualifiedFormat,
+                                                   classTypeFullyQualifiedFormat,
                                                    registrationLifetime,
-                                                   duplicateRegistrationStrategy);
+                                                   duplicateRegistrationStrategy,
+                                                   serviceTypeErrorMessageFormat,
+                                                   classTypeErrorMessageFormat);
             }
         }
 
-        private static IEnumerable<RegistrationDatum> AsImplementedInterfacesAndSelf(INamedTypeSymbol classSymbol, IEnumerable<string> implementedInterfaceNames, AttributeData registrationAttribute)
+        private static IEnumerable<RegistrationDatum> AsImplementedInterfacesAndSelf(INamedTypeSymbol classSymbol,
+                                                                                     IEnumerable<(string fullyQualifiedFormat, string errorMessageFormat)> implementedInterfaceNames,
+                                                                                     AttributeData registrationAttribute)
         {
-            var classTypeName = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var classTypeFullyQualifiedFormat = classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var classTypeErrorMessageFormat = classSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
 
             var registrationLifetime = GetRegistrationLifetime(registrationAttribute);
 
             var duplicateRegistrationStrategy = GetDuplicateRegistrationStrategyFromAttribute(registrationAttribute) ?? DuplicateRegistrationStrategy.Try;
 
-            yield return new RegistrationDatum(classTypeName,
-                                               classTypeName,
+            yield return new RegistrationDatum(classTypeFullyQualifiedFormat,
+                                               classTypeFullyQualifiedFormat,
                                                registrationLifetime,
-                                               duplicateRegistrationStrategy);
+                                               duplicateRegistrationStrategy,
+                                               classTypeErrorMessageFormat,
+                                               classTypeErrorMessageFormat);
 
-            foreach (var implementedInterfaceName in implementedInterfaceNames)
+            foreach (var (serviceTypeFullyQualifiedFormat, serviceTypeErrorMessageFormat) in implementedInterfaceNames)
             {
-                yield return new RegistrationDatum(implementedInterfaceName,
-                                                   classTypeName,
+                yield return new RegistrationDatum(serviceTypeFullyQualifiedFormat,
+                                                   classTypeFullyQualifiedFormat,
                                                    registrationLifetime,
-                                                   duplicateRegistrationStrategy);
+                                                   duplicateRegistrationStrategy,
+                                                   serviceTypeErrorMessageFormat,
+                                                   classTypeErrorMessageFormat);
             }
         }
 
@@ -245,7 +268,9 @@ public static class RegistrationDiagnostics
             return new RegistrationDatum(serviceType,
                                          implementationType,
                                          registrationLifetime,
-                                         duplicateRegistrationStrategy);
+                                         duplicateRegistrationStrategy,
+                                         serviceType,
+                                         implementationType);
         }
 
         private static (string? serviceType, string? implementationType) GetOpenGenericFromAttribute(AttributeData attribute)
@@ -304,7 +329,7 @@ public static class RegistrationDiagnostics
             return duplicateRegistrationStrategy;
         }
 
-        private static string? GetServiceTypeFromGenericTypes(AttributeData attribute)
+        private static (string fullyQualifiedFormat, string errorMessageFormat) GetServiceTypeFromGenericTypes(AttributeData attribute)
         {
             var attributeClass = attribute.AttributeClass;
 
@@ -318,13 +343,14 @@ public static class RegistrationDiagnostics
                     switch (typeParameter.Name)
                     {
                         case "TService":
-                            return typeArgument.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+                            return (typeArgument.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+                                    typeArgument.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
                             break;
                     }
                 }
             }
 
-            return null;
+            return (string.Empty, string.Empty);
         }
 
         private static bool IsAsSelfAttribute(AttributeData attribute)

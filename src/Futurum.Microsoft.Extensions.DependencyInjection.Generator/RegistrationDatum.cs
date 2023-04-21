@@ -7,12 +7,16 @@ public sealed class RegistrationDatum : IEquatable<RegistrationDatum>
     public RegistrationDatum(string serviceType,
                              string implementationType,
                              RegistrationLifetime lifetime,
-                             DuplicateRegistrationStrategy duplicateRegistrationStrategy)
+                             DuplicateRegistrationStrategy duplicateRegistrationStrategy,
+                             string debugServiceType,
+                             string debugImplementationType)
     {
         ServiceType = serviceType;
         ImplementationType = implementationType;
         Lifetime = lifetime;
         DuplicateRegistrationStrategy = duplicateRegistrationStrategy;
+        DebugServiceType = debugServiceType;
+        DebugImplementationType = debugImplementationType;
     }
 
     public string ServiceType { get; }
@@ -22,6 +26,10 @@ public sealed class RegistrationDatum : IEquatable<RegistrationDatum>
     public RegistrationLifetime Lifetime { get; }
 
     public DuplicateRegistrationStrategy DuplicateRegistrationStrategy { get; }
+
+    public string DebugServiceType { get; }
+
+    public string DebugImplementationType { get; }
 
     public bool Equals(RegistrationDatum other)
     {
@@ -33,7 +41,9 @@ public sealed class RegistrationDatum : IEquatable<RegistrationDatum>
         return Lifetime == other.Lifetime
                && ImplementationType == other.ImplementationType
                && ServiceType.Equals(other.ServiceType)
-               && DuplicateRegistrationStrategy == other.DuplicateRegistrationStrategy;
+               && DuplicateRegistrationStrategy == other.DuplicateRegistrationStrategy
+               && DebugServiceType == other.DebugServiceType
+               && DebugImplementationType == other.DebugImplementationType;
     }
 
     public override bool Equals(object obj) =>
@@ -43,7 +53,9 @@ public sealed class RegistrationDatum : IEquatable<RegistrationDatum>
         HashCode.Combine(Lifetime,
                          ImplementationType,
                          ServiceType,
-                         DuplicateRegistrationStrategy);
+                         DuplicateRegistrationStrategy,
+                         DebugServiceType,
+                         DebugImplementationType);
 
     public static bool operator ==(RegistrationDatum left, RegistrationDatum right) =>
         Equals(left, right);
