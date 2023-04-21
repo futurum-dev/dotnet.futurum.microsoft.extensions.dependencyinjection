@@ -32,8 +32,8 @@ public class RegistrationInformationAnalyzer : DiagnosticAnalyzer
                                                  .GetRegistrationData(registrationAttributes, classSymbol)
                                                  .Select(registrationDatum => Diagnostic.Create(DiagnosticDescriptors.RegistrationInformation,
                                                                                                 classSymbol.Locations.First(),
-                                                                                                registrationDatum.ServiceType,
-                                                                                                registrationDatum.ImplementationType,
+                                                                                                registrationDatum.DebugServiceType,
+                                                                                                registrationDatum.DebugImplementationType,
                                                                                                 registrationDatum.DuplicateRegistrationStrategy.ToString(),
                                                                                                 registrationDatum.Lifetime.ToString()));
 
