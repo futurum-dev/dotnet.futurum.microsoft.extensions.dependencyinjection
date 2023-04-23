@@ -5,13 +5,284 @@
 [![Coverage Status](https://img.shields.io/coveralls/github/futurum-dev/dotnet.futurum.microsoft.extensions.dependencyinjection?style=for-the-badge)](https://coveralls.io/github/futurum-dev/dotnet.futurum.microsoft.extensions.dependencyinjection?branch=main)
 [![NuGet version](https://img.shields.io/nuget/v/futurum.microsoft.extensions.dependencyinjection?style=for-the-badge)](https://www.nuget.org/packages/futurum.microsoft.extensions.dependencyinjection)
 
-A dotnet library that extends Microsoft.Extensions.DependencyInjection by adding support for [modules](#modules), [startables](#startables) and [attribute based registration](#attribute-based-registration).
+A dotnet library that extends Microsoft.Extensions.DependencyInjection by adding support for [attribute based registration](#attribute-based-registration), [modules](#modules) and [startables](#startables).
 
 - [x] Autodiscovery of DependencyInjection registrations, based on [attributes](#attribute-based-registration) and Source Generators
 - [x] Autodiscovery of DependencyInjection modules, based on [attributes](#attribute-based-module) and Source Generators
 - [x] Autodiscovery of DependencyInjection startables, based on [attributes](#attribute-based-startable) and Source Generators
-- [x] [Roslyn Analysers](#roslyn-analysers) to help build your modules, startables and registrations, using best practices
+- [x] [Roslyn Analysers](#roslyn-analysers) to help build your registrations, modules and startables, using best practices
 - [x] Integration with [Futurum.Core](https://github.com/futurum-dev/dotnet.futurum.core)
+- [x] [Tested solution](https://coveralls.io/github/futurum-dev/dotnet.futurum.microsoft.extensions.dependencyinjection?branch=main)
+
+## Attribute based registration
+You can register services using attributes.
+
+The attributes have been created is a discoverable way. They take the following form:
+- [RegisterAs{Lifetime}](#registeraslifetime-attribute)
+- [RegisterAs{Lifetime}.AsSelf](#registeraslifetimeasself-attribute)
+- [RegisterAs{Lifetime}.As{ServiceType}](#registeraslifetimeasservicetype-attribute)
+- [RegisterAs{Lifetime}.AsImplementedInterfaces](#registeraslifetimeasimplementedinterfaces-attribute)
+- [RegisterAs{Lifetime}.AsImplementedInterfacesAndSelf](#registeraslifetimeasimplementedinterfacesandself-attribute)
+- [RegisterAs{Lifetime}.AsOpenGeneric](#registeraslifetimeasopengeneric-attribute)
+
+There are 3 lifetimes available:
+- Singleton
+- Scoped
+- Transient
+
+**NOTE** - There is a Roslyn Analyser that will provide information on exactly what registration is taking place. Just hover over the class.
+
+### RegisterAs{Lifetime} attribute
+This will register the class against the 1 interface the class implements, for the specified lifetime.
+
+**NOTE** - There is a Roslyn Analyser that will warn you if you use this attribute and the class does not implement exactly 1 interface.
+
+e.g. This will register *Service* against *IService* with a *Singleton* lifetime.
+```csharp
+[RegisterAsSingleton]
+public class Service : IService
+{
+}
+```
+
+e.g. This will register *Service* against *IService* with a *Scoped* lifetime.
+```csharp
+[RegisterAsScoped]
+public class Service : IService
+{
+}
+```
+
+e.g. This will register *Service* against *IService* with a *Transient* lifetime.
+```csharp
+[RegisterAsTransient]
+public class Service : IService
+{
+}
+```
+
+### RegisterAs{Lifetime}.AsSelf attribute
+This will register the class against itself, for the specified lifetime.
+
+e.g. This will register *Service* against *Service* with a *Singleton* lifetime.
+```csharp
+[RegisterAsSingleton.AsSelf]
+public class Service
+{
+}
+```
+
+e.g. This will register *Service* against *Service* with a *Scoped* lifetime.
+```csharp
+[RegisterAsScoped.AsSelf]
+public class Service
+{
+}
+```
+
+e.g. This will register *Service* against *Service* with a *Transient* lifetime.
+```csharp
+[RegisterAsTransient.AsSelf]
+public class Service
+{
+}
+```
+
+### RegisterAs{Lifetime}.As{ServiceType} attribute
+This will register the class against the specified interface, for the specified lifetime.
+
+**NOTE** - There is a Roslyn Analyser that will warn you if you use the class does not implement the specified interface.
+
+e.g. This will register *Service* against *IService1* with a *Singleton* lifetime.
+```csharp
+[RegisterAsSingleton.As<IService2>]
+public class Service : IService1, IService2
+{
+}
+```
+
+e.g. This will register *Service* against *IService1* with a *Scoped* lifetime.
+```csharp
+[RegisterAsScoped.As<IService2>]
+public class Service : IService1, IService2
+{
+}
+```
+
+e.g. This will register *Service* against *IService1* with a *Transient* lifetime.
+```csharp
+[RegisterAsTransient.As<IService2>]
+public class Service : IService1, IService2
+{
+}
+```
+
+### RegisterAs{Lifetime}.AsImplementedInterfaces attribute
+This will register the class against all the interfaces it implements directly, for the specified lifetime.
+
+e.g. This will register *Service* against *IService1* and *IService2* with a *Singleton* lifetime.
+```csharp
+[RegisterAsSingleton.AsImplementedInterfaces]
+public class Service : IService1, IService2
+{
+}
+```
+
+e.g. This will register *Service* against *IService1* and *IService2* with a *Scoped* lifetime.
+```csharp
+[RegisterAsScoped.AsImplementedInterfaces]
+public class Service : IService1, IService2
+{
+}
+```
+
+e.g. This will register *Service* against *IService1* and *IService2* with a *Transient* lifetime.
+```csharp
+[RegisterAsTransient.AsImplementedInterfaces]
+public class Service : IService1, IService2
+{
+}
+```
+
+### RegisterAs{Lifetime}.AsImplementedInterfacesAndSelf attribute
+This will register the class against all the interfaces it implements directly and itself, for the specified lifetime.
+
+e.g. This will register *Service* against *Service*, *IService1* and *IService2* with a *Singleton* lifetime.
+```csharp
+[RegisterAsSingleton.AsImplementedInterfacesAndSelf]
+public class Service : IService1, IService2
+{
+}
+```
+
+e.g. This will register *Service* against *Service*, *IService1* and *IService2* with a *Scoped* lifetime.
+```csharp
+[RegisterAsScoped.AsImplementedInterfacesAndSelf]
+public class Service : IService1, IService2
+{
+}
+```
+
+e.g. This will register *Service* against *Service*, *IService1* and *IService2* with a *Transient* lifetime.
+```csharp
+[RegisterAsTransient.AsImplementedInterfacesAndSelf]
+public class Service : IService1, IService2
+{
+}
+```
+
+### RegisterAs{Lifetime}.AsOpenGeneric attribute
+This will register the an open generic class against an open generic interface, for the specified lifetime.
+
+e.g. This will register *Service&lt;T&gt;* against *IService&lt;T&gt;* with a *Singleton* lifetime.
+```csharp
+[RegisterAsSingleton.AsOpenGeneric(ImplementationType = typeof(Service<>), ServiceType = typeof(IService<>))]
+public class Service<T> : IService<T>
+{
+}
+```
+
+e.g. This will register *Service&lt;T&gt;* against *IService&lt;T&gt;* with a *Scoped* lifetime.
+```csharp
+[RegisterAsScoped.AsOpenGeneric(ImplementationType = typeof(Service<>), ServiceType = typeof(IService<>))]
+public class Service<T> : IService<T>
+{
+}
+```
+
+e.g. This will register *Service&lt;T&gt;* against *IService&lt;T&gt;* with a *Transient* lifetime.
+```csharp
+[RegisterAsTransient.AsOpenGeneric(ImplementationType = typeof(Service<>), ServiceType = typeof(IService<>))]
+public class Service<T> : IService<T>
+{
+}
+```
+
+### DuplicateRegistrationStrategy
+**All** registration attributes allow you to specify how to handle duplicate registrations.
+
+- Try - Adds the new registration, if the service hasn't already been registered
+- Replace - Removes any existing registration and then adds the new registration
+- Add - Adds the new registration, irrespective of if its previously been registered
+
+**NOTE** - This defaults to *Try*
+
+#### Try
+**NOTE - This is the default behaviour.**
+
+e.g. This will register *Service* against *IService* with a *Singleton* lifetime via *Try*.
+```csharp
+[RegisterAsSingleton(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Try)]
+public class Service : IService
+{
+}
+```
+
+e.g. This will register *Service* against *IService* with a *Scoped* lifetime via *Try*.
+```csharp
+[RegisterAsScoped(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Try)]
+public class Service : IService
+{
+}
+```
+
+e.g. This will register *Service* against *IService* with a *Transient* lifetime via *Try*.
+```csharp
+[RegisterAsTransient(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Try)]
+public class Service : IService
+{
+}
+```
+
+#### Replace
+e.g. This will register *Service* against *IService* with a *Singleton* lifetime via *Replace*.
+```csharp
+[RegisterAsSingleton(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Replace)]
+public class Service : IService
+{
+}
+```
+
+e.g. This will register *Service* against *IService* with a *Scoped* lifetime via *Replace*.
+```csharp
+[RegisterAsScoped(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Replace)]
+public class Service : IService
+{
+}
+```
+
+e.g. This will register *Service* against *IService* with a *Transient* lifetime via *Replace*.
+```csharp
+[RegisterAsTransient(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Replace)]
+public class Service : IService
+{
+}
+```
+
+#### Add
+e.g. This will register *Service* against *IService* with a *Singleton* lifetime via *Add*.
+```csharp
+[RegisterAsSingleton(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Add)]
+public class Service : IService
+{
+}
+```
+
+e.g. This will register *Service* against *IService* with a *Scoped* lifetime via *Add*.
+```csharp
+[RegisterAsScoped(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Add)]
+public class Service : IService
+{
+}
+```
+
+e.g. This will register *Service* against *IService* with a *Transient* lifetime via *Add*.
+```csharp
+[RegisterAsTransient(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Add)]
+public class Service : IService
+{
+}
+```
 
 ## Modules
 A module allows you to break up registration into logical units.
@@ -19,6 +290,8 @@ A module allows you to break up registration into logical units.
 Module can either be registered using *IModule* interface and *AddModule* extension method, or by using the [*RegisterAsDependencyInjectionModule*](#attribute-based-module) attribute.
 
 ### IModule interface and AddModule extension method
+If you use the *IModule* interface, you must manually register the module using the *AddModule* extension method.
+
 #### IModule interface
 Implements this interface to create a module.
 
@@ -73,7 +346,11 @@ A startable is resolved at the start of the application lifecycle and is a place
 
 Startable can either be registered using *IStartable* interface and *AddStartable* extension method, or by using the [*RegisterAsDependencyInjectionStartable*](#attribute-based-startable) attribute.
 
+**NOTE** - The main difference is that using *IStartable* interface allows you to inject dependencies into the startable, whereas the attribute based approach does not.
+
 ### IStartable interface and AddStartable extension method
+If you use the *IStartable* interface, you must manually register the startable using the *AddStartable* extension method.
+
 #### IStartable interface
 Implements this interface to create a startable.
 
@@ -107,7 +384,7 @@ You can also register modules using attributes.
 public class Startable
 {
     [RegisterAsDependencyInjectionStartable]
-    public Task Start()
+    public Task StartAsync()
     {
         // Do something
     }
@@ -118,7 +395,7 @@ public class Startable
 public static class Startable
 {
     [RegisterAsDependencyInjectionStartable]
-    public static Task Start()
+    public static Task StartAsync()
     {
         // Do something
     }
@@ -131,104 +408,6 @@ This will build the container as usual, but also starts all *IStartable* instanc
 
 ```csharp
 var serviceProvider = await services.BuildServiceProviderWithStartablesAsync();
-```
-
-## Attribute based registration
-You can also register services using attributes.
-
-The attributes have been created is a discoverable way. They take the following form:
-- RegisterAs{Lifetime}
-- RegisterAs{Lifetime}.AsSelf
-- RegisterAs{Lifetime}.As{ServiceType}
-- RegisterAs{Lifetime}.AsImplementedInterfaces
-- RegisterAs{Lifetime}.AsImplementedInterfacesAndSelf
-- RegisterAs{Lifetime}.AsOpenGeneric
-
-There are 3 lifetimes available:
-- Singleton
-- Scoped
-- Transient
-
-### RegisterAs{Lifetime} attribute
-This will register the class against the 1 interface the class implements, for the specified lifetime.
-
-e.g. This will register *Service* against *IService* with a *Scoped* lifetime.
-```csharp
-[RegisterAsScoped]
-public class Service : IService
-{
-}
-```
-
-### RegisterAs{Lifetime}.AsSelf attribute
-This will register the class against itself, for the specified lifetime.
-
-e.g. This will register *Service* against *Service* with a *Scoped* lifetime.
-```csharp
-[RegisterAsScoped.AsSelf]
-public class Service
-{
-}
-```
-
-### RegisterAs{Lifetime}.As{ServiceType} attribute
-This will register the class against the specified interface, for the specified lifetime.
-
-e.g. This will register *Service* against *IService1* with a *Scoped* lifetime.
-```csharp
-[RegisterAsScoped.As<IService2>]
-public class Service : IService1, IService2
-{
-}
-```
-
-### RegisterAs{Lifetime}.AsImplementedInterfaces attribute
-This will register the class against all the interfaces it implements directly, for the specified lifetime.
-
-e.g. This will register *Service* against *IService1* and *IService2* with a *Scoped* lifetime.
-```csharp
-[RegisterAsScoped.AsImplementedInterfaces]
-public class Service : IService1, IService2
-{
-}
-```
-
-### RegisterAs{Lifetime}.AsImplementedInterfacesAndSelf attribute
-This will register the class against all the interfaces it implements directly and itself, for the specified lifetime.
-
-e.g. This will register *Service* against *Service*, *IService1* and *IService2* with a *Scoped* lifetime.
-```csharp
-[RegisterAsScoped.AsImplementedInterfacesAndSelf]
-public class Service : IService1, IService2
-{
-}
-```
-
-### RegisterAs{Lifetime}.AsOpenGeneric attribute
-This will register the an open generic class against an open generic interface, for the specified lifetime.
-
-e.g. This will register *Service&lt;T&gt;* against *IService&lt;T&gt;* with a *Scoped* lifetime.
-```csharp
-[RegisterAsScoped.AsOpenGeneric(ImplementationType = typeof(Service<>), ServiceType = typeof(IService<>))]
-public class Service<T> : IService<T>
-{
-}
-```
-
-### DuplicateRegistrationStrategy
-You can also specify how to handle duplicate registrations.
-
-- Try - Adds the new registration, if the service hasn't already been registered
-- Replace - Removes any existing registration and then adds the new registration
-- Add - Adds the new registration, irrespective of if its previously been registered
-
-**NOTE** - This defaults to *Try*
-
-```csharp
-[RegisterAsSingleton(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Add)]
-public class Service : IService
-{
-}
 ```
 
 ## TryGetService
