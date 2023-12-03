@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 
 using VerifyXunit;
 
-using Xunit;
-
 namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator.Writer.Tests;
 
 [UsesVerify]

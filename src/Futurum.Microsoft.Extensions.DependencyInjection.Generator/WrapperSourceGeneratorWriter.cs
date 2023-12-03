@@ -19,16 +19,6 @@ public static class WrapperSourceGeneratorWriter
 
         if (!isNotMainMethod)
         {
-            if (!skipVersion)
-            {
-                codeBuilder
-                    .Append("[global::System.CodeDom.Compiler.GeneratedCode(\"")
-                    .Append(ThisAssembly.Project.AssemblyName)
-                    .Append("\", \"")
-                    .Append(ThisAssembly.Info.Version)
-                    .AppendLine("\")]");
-            }
-
             codeBuilder
                 .AppendLine("[global::System.Diagnostics.DebuggerNonUserCodeAttribute]")
                 .AppendLine("[global::System.Diagnostics.DebuggerStepThroughAttribute]");

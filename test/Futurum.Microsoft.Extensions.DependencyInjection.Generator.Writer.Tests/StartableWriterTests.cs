@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 
 using VerifyXunit;
 
-using Xunit;
-
 namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator.Writer.Tests;
 
 [UsesVerify]
@@ -24,7 +22,7 @@ public class StartableWriterTests
 
         return Verifier.Verify(result).UseDirectory("Snapshots");
     }
-    
+
     [Fact]
     public Task Instance()
     {
