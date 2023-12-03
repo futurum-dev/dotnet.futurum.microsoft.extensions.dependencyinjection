@@ -11,7 +11,6 @@ A dotnet library that extends Microsoft.Extensions.DependencyInjection by adding
 - [x] Autodiscovery of DependencyInjection modules, based on [attributes](#attribute-based-module) and Source Generators
 - [x] Autodiscovery of DependencyInjection startables, based on [attributes](#attribute-based-startable) and Source Generators
 - [x] [Roslyn Analysers](#roslyn-analysers) to help build your registrations, modules and startables, using best practices
-- [x] Integration with [Futurum.Core](https://github.com/futurum-dev/dotnet.futurum.core)
 - [x] [Tested solution](https://coveralls.io/github/futurum-dev/dotnet.futurum.microsoft.extensions.dependencyinjection?branch=main)
 
 ## Attribute based registration
@@ -400,21 +399,6 @@ public static class Startable
         // Do something
     }
 }
-```
-
-### BuildServiceProviderWithStartables extension method
-If you are manually building the *IServiceProvider*, then you need to use *BuildServiceProviderWithStartablesAsync* extension method.
-This will build the container as usual, but also starts all *IStartable* instances.
-
-```csharp
-var serviceProvider = await services.BuildServiceProviderWithStartablesAsync();
-```
-
-## TryGetService
-Try to get the service object of the specified type.
-
-```csharp
-var result = serviceProvider.TryGetService<ITestService>();
 ```
 
 ## Roslyn Analysers

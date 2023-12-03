@@ -1,8 +1,4 @@
-using Futurum.Test.Result;
-
 using Microsoft.Extensions.DependencyInjection;
-
-using Xunit;
 
 namespace Futurum.Microsoft.Extensions.DependencyInjection.Tests;
 
@@ -16,9 +12,9 @@ public class ModuleExtensionsTests
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var result = serviceProvider.TryGetService<ITestService>();
+        var result = serviceProvider.GetService<ITestService>();
 
-        result.ShouldBeSuccess();
+        result.Should().NotBeNull();
     }
 
     [Fact]
@@ -29,9 +25,9 @@ public class ModuleExtensionsTests
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var result = serviceProvider.TryGetService<ITestService>();
+        var result = serviceProvider.GetService<ITestService>();
 
-        result.ShouldBeSuccess();
+        result.Should().NotBeNull();
     }
 
     [Fact]
@@ -42,9 +38,9 @@ public class ModuleExtensionsTests
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var result = serviceProvider.TryGetService<ITestService>();
+        var result = serviceProvider.GetService<ITestService>();
 
-        result.ShouldBeSuccess();
+        result.Should().NotBeNull();
     }
 
     public class TestModule : IModule
