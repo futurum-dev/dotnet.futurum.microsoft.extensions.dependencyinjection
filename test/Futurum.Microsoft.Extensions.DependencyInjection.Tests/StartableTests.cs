@@ -1,11 +1,5 @@
-using FluentAssertions;
-
-using Futurum.Test.Result;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
-using Xunit;
 
 namespace Futurum.Microsoft.Extensions.DependencyInjection.Tests;
 
@@ -26,9 +20,9 @@ public class StartableTests
 
             var serviceProvider = await services.BuildServiceProviderWithStartablesAsync();
 
-            var result = serviceProvider.TryGetService<SingletonList>();
+            var result = serviceProvider.GetService<SingletonList>();
 
-            result.ShouldBeSuccessWithValueEquivalentTo(x => x.Numbers, Enumerable.Range(0, 10));
+            result.Numbers.Should().BeEquivalentTo(Enumerable.Range(0, 10));
         }
 
         [Fact]
@@ -42,9 +36,9 @@ public class StartableTests
 
             var serviceProvider = await services.BuildServiceProviderWithStartablesAsync();
 
-            var result = serviceProvider.TryGetService<SingletonList>();
+            var result = serviceProvider.GetService<SingletonList>();
 
-            result.ShouldBeSuccessWithValueEquivalentTo(x => x.Numbers, Enumerable.Range(0, 10));
+            result.Numbers.Should().BeEquivalentTo(Enumerable.Range(0, 10));
         }
     }
 
@@ -66,9 +60,9 @@ public class StartableTests
             var startableHostedService = serviceProvider.GetService<IHostedService>();
             await startableHostedService.StartAsync(CancellationToken.None);
 
-            var result = serviceProvider.TryGetService<SingletonList>();
+            var result = serviceProvider.GetService<SingletonList>();
 
-            result.ShouldBeSuccessWithValueEquivalentTo(x => x.Numbers, Enumerable.Range(0, 10));
+            result.Numbers.Should().BeEquivalentTo(Enumerable.Range(0, 10));
 
             await startableHostedService.StopAsync(CancellationToken.None);
         }
@@ -87,9 +81,9 @@ public class StartableTests
             var startableHostedService = serviceProvider.GetService<IHostedService>();
             await startableHostedService.StartAsync(CancellationToken.None);
 
-            var result = serviceProvider.TryGetService<SingletonList>();
+            var result = serviceProvider.GetService<SingletonList>();
 
-            result.ShouldBeSuccessWithValueEquivalentTo(x => x.Numbers, Enumerable.Range(0, 10));
+            result.Numbers.Should().BeEquivalentTo(Enumerable.Range(0, 10));
 
             await startableHostedService.StopAsync(CancellationToken.None);
         }
@@ -147,7 +141,7 @@ public class StartableTests
     internal class TestWrapperStartable : IStartable
     {
         public static readonly SingletonList SingletonList = new();
-        
+
         public async Task StartAsync()
         {
             var numbers = Enumerable.Range(0, 10);

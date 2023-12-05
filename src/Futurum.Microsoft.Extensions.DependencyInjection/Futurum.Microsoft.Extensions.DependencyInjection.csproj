@@ -1,19 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <OutputType>Library</OutputType>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <IsPackable>true</IsPackable>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <PropertyGroup>
         <PackageId>Futurum.Microsoft.Extensions.DependencyInjection</PackageId>
         <PackageIcon>dotnet-logo.png</PackageIcon>
         <Description>A dotnet library that extends Microsoft.Extensions.DependencyInjection by adding support for attribute based registration, modules and startables</Description>
-        <PackageProjectUrl>https://www.futurum.dev/projects/dotnet-futurum.html</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/futurum-dev/dotnet.futurum.microsoft.extensions.dependencyinjection</PackageProjectUrl>
         <RepositoryUrl>https://github.com/futurum-dev/dotnet.futurum.microsoft.extensions.dependencyinjection</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
@@ -31,10 +32,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Futurum.Core" Version="1.0.16" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
-      <PackageReference Update="MinVer" Version="4.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
+      <PackageReference Update="MinVer" Version="4.3.0" />
+      <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>

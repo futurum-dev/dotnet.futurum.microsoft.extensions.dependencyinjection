@@ -1,10 +1,6 @@
 using System.Linq;
 
-using FluentAssertions;
-
 using Microsoft.Extensions.DependencyInjection;
-
-using Xunit;
 
 namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests;
 

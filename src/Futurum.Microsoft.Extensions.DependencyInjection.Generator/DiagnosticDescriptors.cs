@@ -26,7 +26,7 @@ public static class DiagnosticDescriptors
     public static readonly DiagnosticDescriptor ModuleNonEmptyConstructor = new(
         "FMEDI0003",
         "Non empty constructor found on Module",
-        $"Module class '{{0}}' does not have an empty constructor.{Environment.NewLine} Module classes must have an empty constructor.",
+        $"Module class '{{0}}' does not have an empty constructor.\nModule classes must have an empty constructor.",
         "Futurum.Microsoft.Extensions.DependencyInjection.Generator",
         DiagnosticSeverity.Error,
         true);
@@ -34,7 +34,7 @@ public static class DiagnosticDescriptors
     public static readonly DiagnosticDescriptor StartableNonEmptyConstructor = new(
         "FMEDI0004",
         "Non empty constructor found on Startable",
-        $"Startable class '{{0}}' does not have an empty constructor.{Environment.NewLine} Startable classes must have an empty constructor.",
+        $"Startable class '{{0}}' does not have an empty constructor.\nStartable classes must have an empty constructor.",
         "Futurum.Microsoft.Extensions.DependencyInjection.Generator",
         DiagnosticSeverity.Error,
         true);
@@ -42,7 +42,7 @@ public static class DiagnosticDescriptors
     public static readonly DiagnosticDescriptor StartableNonAsyncMethod = new(
         "FMEDI0005",
         "Non async method found on Startable",
-        $"Startable method '{{0}}' is not async.{Environment.NewLine} Startable methods must be async.",
+        $"Startable method '{{0}}' is not async.\nStartable methods must be async.",
         "Futurum.Microsoft.Extensions.DependencyInjection.Generator",
         DiagnosticSeverity.Error,
         true);
@@ -50,7 +50,7 @@ public static class DiagnosticDescriptors
     public static readonly DiagnosticDescriptor ModuleNonVoidReturn = new(
         "FMEDI0006",
         "Non void method found on Module",
-        $"Module method '{{0}}' does not return void.{Environment.NewLine} Module methods must return void.",
+        $"Module method '{{0}}' does not return void.\nModule methods must return void.",
         "Futurum.Microsoft.Extensions.DependencyInjection.Generator",
         DiagnosticSeverity.Error,
         true);
@@ -58,7 +58,7 @@ public static class DiagnosticDescriptors
     public static readonly DiagnosticDescriptor RegistrationServiceTypeNotImplementedByClass = new(
         "FMEDI0007",
         "Register ServiceType not implemented by class",
-        $"Class '{{0}}' does not implement ServiceType '{{1}}'.{Environment.NewLine} Class must implement the ServiceType.",
+        $"Class '{{0}}' does not implement ServiceType '{{1}}'.\nClass must implement the ServiceType.",
         "Futurum.Microsoft.Extensions.DependencyInjection.Generator",
         DiagnosticSeverity.Error,
         true);
@@ -66,7 +66,7 @@ public static class DiagnosticDescriptors
     public static readonly DiagnosticDescriptor RegistrationDefaultMustHaveOneInterfaceOnly = new(
         "FMEDI0008",
         "Registration, must only have 1 interface",
-        $"Class '{{0}}' has '{{1}}' interfaces.{Environment.NewLine} Class must only have 1 interface. Please use another registration method.",
+        $"Class '{{0}}' has '{{1}}' interfaces.\nClass must only have 1 interface. Please use another registration method.",
         "Futurum.Microsoft.Extensions.DependencyInjection.Generator",
         DiagnosticSeverity.Error,
         true);
