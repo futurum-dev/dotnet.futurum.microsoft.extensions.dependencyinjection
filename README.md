@@ -7,11 +7,29 @@
 
 A dotnet library that extends Microsoft.Extensions.DependencyInjection by adding support for [attribute based registration](#attribute-based-registration), [modules](#modules) and [startables](#startables).
 
+- [x] [Easy setup](#easy-setup)
 - [x] Autodiscovery of DependencyInjection registrations, based on [attributes](#attribute-based-registration) and Source Generators
 - [x] Autodiscovery of DependencyInjection modules, based on [attributes](#attribute-based-module) and Source Generators
 - [x] Autodiscovery of DependencyInjection startables, based on [attributes](#attribute-based-startable) and Source Generators
 - [x] [Roslyn Analysers](#roslyn-analysers) to help build your registrations, modules and startables, using best practices
 - [x] [Tested solution](https://coveralls.io/github/futurum-dev/dotnet.futurum.microsoft.extensions.dependencyinjection?branch=main)
+
+## Easy setup
+1. Install the [NuGet package](https://www.nuget.org/packages/futurum.microsoft.extensions.dependencyinjection)
+2. Update *program.cs* as per [here](#programcs)
+
+### Program.cs
+```csharp
+builder.Services.AddDependencyInjectionFor...();
+```
+
+#### AddDependencyInjectionFor... (per project containing registrations)
+This will be automatically created by the source generator.
+
+e.g.
+```csharp
+builder.Services.AddDependencyInjectionForFuturumMicrosoftExtensionsDependencyInjectionSample();
+```
 
 ## Attribute based registration
 You can register services using attributes.
