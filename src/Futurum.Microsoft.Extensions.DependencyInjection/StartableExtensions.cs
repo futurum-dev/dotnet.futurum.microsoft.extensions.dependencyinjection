@@ -13,9 +13,9 @@ public static class StartableExtensions
     public static IServiceCollection AddStartable<T>(this IServiceCollection services)
         where T : class, IStartable
     {
-        services.AddSingleton<IStartable, T>();
+        services.AddTransient<IStartable, T>();
         
-        services.TryAddSingleton<IHostedService, StartableHostedService>();
+        services.TryAddTransient<IHostedService, StartableHostedService>();
 
         return services;
     }
@@ -29,7 +29,7 @@ public static class StartableExtensions
     {
         services.AddSingleton<IStartable>(startable);
         
-        services.TryAddSingleton<IHostedService, StartableHostedService>();
+        services.TryAddTransient<IHostedService, StartableHostedService>();
 
         return services;
     }
