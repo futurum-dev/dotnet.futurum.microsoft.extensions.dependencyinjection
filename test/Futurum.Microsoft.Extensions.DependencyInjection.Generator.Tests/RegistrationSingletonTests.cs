@@ -14,7 +14,7 @@ public class RegistrationSingletonTests
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddDependencyInjectionForFuturumMicrosoftExtensionsDependencyInjectionGeneratorTests();
 
-            var serviceDescriptor = serviceCollection.Where(x => x.ImplementationType == typeof(Service));
+            var serviceDescriptor = serviceCollection.Where(x => x.ServiceKey == null && x.ImplementationType == typeof(Service));
 
             serviceDescriptor.Count().Should().Be(1);
             serviceDescriptor.First().ServiceType.Should().Be(typeof(IService1));
@@ -39,7 +39,7 @@ public class RegistrationSingletonTests
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddDependencyInjectionForFuturumMicrosoftExtensionsDependencyInjectionGeneratorTests();
 
-            var serviceDescriptor = serviceCollection.Where(x => x.ImplementationType == typeof(Service));
+            var serviceDescriptor = serviceCollection.Where(x => x.ServiceKey == null && x.ImplementationType == typeof(Service));
 
             serviceDescriptor.Count().Should().Be(1);
             serviceDescriptor.First().ServiceType.Should().Be(typeof(IService2));
@@ -68,7 +68,7 @@ public class RegistrationSingletonTests
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddDependencyInjectionForFuturumMicrosoftExtensionsDependencyInjectionGeneratorTests();
 
-            var serviceDescriptor = serviceCollection.Where(x => x.ImplementationType == typeof(Service));
+            var serviceDescriptor = serviceCollection.Where(x => x.ServiceKey == null && x.ImplementationType == typeof(Service));
 
             serviceDescriptor.Count().Should().Be(2);
             serviceDescriptor.First(x => x.ServiceType == typeof(IService1)).Lifetime.Should().Be(ServiceLifetime.Singleton);
@@ -97,7 +97,7 @@ public class RegistrationSingletonTests
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddDependencyInjectionForFuturumMicrosoftExtensionsDependencyInjectionGeneratorTests();
 
-            var serviceDescriptor = serviceCollection.Where(x => x.ImplementationType == typeof(Service));
+            var serviceDescriptor = serviceCollection.Where(x => x.ServiceKey == null && x.ImplementationType == typeof(Service));
 
             serviceDescriptor.Count().Should().Be(3);
             serviceDescriptor.First(x => x.ServiceType == typeof(Service)).Lifetime.Should().Be(ServiceLifetime.Singleton);
@@ -127,7 +127,7 @@ public class RegistrationSingletonTests
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddDependencyInjectionForFuturumMicrosoftExtensionsDependencyInjectionGeneratorTests();
 
-            var serviceDescriptor = serviceCollection.Where(x => x.ImplementationType == typeof(Service));
+            var serviceDescriptor = serviceCollection.Where(x => x.ServiceKey == null && x.ImplementationType == typeof(Service));
 
             serviceDescriptor.Count().Should().Be(1);
             serviceDescriptor.First(x => x.ServiceType == typeof(Service)).Lifetime.Should().Be(ServiceLifetime.Singleton);
@@ -157,7 +157,7 @@ public class RegistrationSingletonTests
                 var serviceCollection = new ServiceCollection();
                 serviceCollection.AddDependencyInjectionForFuturumMicrosoftExtensionsDependencyInjectionGeneratorTests();
 
-                var serviceDescriptor = serviceCollection.Where(x => x.ServiceType == typeof(IService));
+                var serviceDescriptor = serviceCollection.Where(x => x.ServiceKey == null && x.ServiceType == typeof(IService));
 
                 serviceDescriptor.Count().Should().Be(1);
                 serviceDescriptor.First().ImplementationType.Should().Be(typeof(Service1));
@@ -187,7 +187,7 @@ public class RegistrationSingletonTests
                 var serviceCollection = new ServiceCollection();
                 serviceCollection.AddDependencyInjectionForFuturumMicrosoftExtensionsDependencyInjectionGeneratorTests();
 
-                var serviceDescriptor = serviceCollection.Where(x => x.ServiceType == typeof(IService));
+                var serviceDescriptor = serviceCollection.Where(x => x.ServiceKey == null && x.ServiceType == typeof(IService));
 
                 serviceDescriptor.Count().Should().Be(1);
                 serviceDescriptor.First().ImplementationType.Should().Be(typeof(Service2));
@@ -217,7 +217,7 @@ public class RegistrationSingletonTests
                 var serviceCollection = new ServiceCollection();
                 serviceCollection.AddDependencyInjectionForFuturumMicrosoftExtensionsDependencyInjectionGeneratorTests();
 
-                var serviceDescriptor = serviceCollection.Where(x => x.ServiceType == typeof(IService));
+                var serviceDescriptor = serviceCollection.Where(x => x.ServiceKey == null && x.ServiceType == typeof(IService));
 
                 serviceDescriptor.Count().Should().Be(2);
                 serviceDescriptor.First().ImplementationType.Should().Be(typeof(Service1));

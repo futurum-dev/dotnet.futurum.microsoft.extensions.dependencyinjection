@@ -15,9 +15,18 @@ public static class RegistrationDiagnostics
             if (attributeClass == null)
                 return false;
 
-            return attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransient") ||
-                   attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScoped") ||
-                   attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingleton");
+            return attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                 .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransient") ||
+                   attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                 .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsKeyedTransient") ||
+                   attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                 .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScoped") ||
+                   attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                 .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsKeyedScoped") ||
+                   attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                 .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingleton") ||
+                   attributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                 .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsKeyedSingleton");
         }
     }
 
@@ -29,11 +38,28 @@ public static class RegistrationDiagnostics
             return false;
         }
 
-        return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScopedAttribute") ||
+        return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                      .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScopedAttribute") ||
                attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
                                       .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingletonAttribute") ||
                attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
                                       .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransientAttribute");
+    }
+
+    public static bool IsKeyedDefaultAttribute(AttributeData attribute)
+    {
+        var attributeAttributeClass = attribute.AttributeClass;
+        if (attributeAttributeClass == null)
+        {
+            return false;
+        }
+
+        return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                      .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsKeyedScopedAttribute") ||
+               attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                      .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsKeyedSingletonAttribute") ||
+               attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                      .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsKeyedTransientAttribute");
     }
 
     public static class ServiceTypeNotImplementedByClass
@@ -113,9 +139,21 @@ public static class RegistrationDiagnostics
                     continue;
                 }
 
+                if (IsKeyedDefaultAttribute(registrationAttribute))
+                {
+                    yield return KeyedDefault(classSymbol, implementedInterfaceNames.First(), registrationAttribute);
+                    continue;
+                }
+
                 if (IsAsSelfAttribute(registrationAttribute))
                 {
                     yield return AsSelf(classSymbol, registrationAttribute);
+                    continue;
+                }
+
+                if (IsAsKeyedSelfAttribute(registrationAttribute))
+                {
+                    yield return AsKeyedSelf(classSymbol, registrationAttribute);
                     continue;
                 }
 
@@ -125,9 +163,25 @@ public static class RegistrationDiagnostics
                     continue;
                 }
 
+                if (IsAsKeyedGenericTypeAttribute(registrationAttribute))
+                {
+                    yield return AsKeyed(classSymbol, registrationAttribute);
+                    continue;
+                }
+
                 if (IsAsImplementedInterfacesAttribute(registrationAttribute))
                 {
                     foreach (var registrationDatum in AsImplementedInterfaces(classSymbol, implementedInterfaceNames, registrationAttribute))
+                    {
+                        yield return registrationDatum;
+                    }
+
+                    continue;
+                }
+
+                if (IsAsKeyedImplementedInterfacesAttribute(registrationAttribute))
+                {
+                    foreach (var registrationDatum in AsKeyedImplementedInterfaces(classSymbol, implementedInterfaceNames, registrationAttribute))
                     {
                         yield return registrationDatum;
                     }
@@ -145,9 +199,25 @@ public static class RegistrationDiagnostics
                     continue;
                 }
 
+                if (IsAsKeyedImplementedInterfacesAndSelfAttribute(registrationAttribute))
+                {
+                    foreach (var registrationDatum in AsKeyedImplementedInterfacesAndSelf(classSymbol, implementedInterfaceNames, registrationAttribute))
+                    {
+                        yield return registrationDatum;
+                    }
+
+                    continue;
+                }
+
                 if (IsAsOpenGenericAttribute(registrationAttribute))
                 {
                     yield return AsOpenGeneric(classSymbol, registrationAttribute);
+                    continue;
+                }
+
+                if (IsAsKeyedOpenGenericAttribute(registrationAttribute))
+                {
+                    yield return AsKeyedOpenGeneric(classSymbol, registrationAttribute);
                     continue;
                 }
             }
@@ -164,10 +234,26 @@ public static class RegistrationDiagnostics
 
             return new RegistrationDatum(implementedInterfaceName.fullyQualifiedFormat,
                                          classTypeFullyQualifiedFormat,
+                                         null,
                                          registrationLifetime,
                                          duplicateRegistrationStrategy,
                                          implementedInterfaceName.errorMessageFormat,
                                          classTypeErrorMessageFormat);
+        }
+
+        private static RegistrationDatum KeyedDefault(INamedTypeSymbol classSymbol, (string fullyQualifiedFormat, string errorMessageFormat) implementedInterfaceName, AttributeData registrationAttribute)
+        {
+            var nonKeyed = Default(classSymbol, implementedInterfaceName, registrationAttribute);
+
+            var key = GetKeyFromAttribute(registrationAttribute);
+
+            return new RegistrationDatum(nonKeyed.ServiceType,
+                                         nonKeyed.ImplementationType,
+                                         key,
+                                         nonKeyed.Lifetime,
+                                         nonKeyed.DuplicateRegistrationStrategy,
+                                         nonKeyed.ServiceType,
+                                         nonKeyed.ImplementationType);
         }
 
         private static RegistrationDatum AsSelf(INamedTypeSymbol classSymbol, AttributeData registrationAttribute)
@@ -181,10 +267,26 @@ public static class RegistrationDiagnostics
 
             return new RegistrationDatum(classTypeFullyQualifiedFormat,
                                          classTypeFullyQualifiedFormat,
+                                         null,
                                          registrationLifetime,
                                          duplicateRegistrationStrategy,
                                          classTypeErrorMessageFormat,
                                          classTypeErrorMessageFormat);
+        }
+
+        private static RegistrationDatum AsKeyedSelf(INamedTypeSymbol classSymbol, AttributeData registrationAttribute)
+        {
+            var nonKeyed = AsSelf(classSymbol, registrationAttribute);
+
+            var key = GetKeyFromAttribute(registrationAttribute);
+
+            return new RegistrationDatum(nonKeyed.ServiceType,
+                                         nonKeyed.ImplementationType,
+                                         key,
+                                         nonKeyed.Lifetime,
+                                         nonKeyed.DuplicateRegistrationStrategy,
+                                         nonKeyed.ServiceType,
+                                         nonKeyed.ImplementationType);
         }
 
         private static RegistrationDatum As(INamedTypeSymbol classSymbol, AttributeData registrationAttribute)
@@ -200,10 +302,26 @@ public static class RegistrationDiagnostics
 
             return new RegistrationDatum(serviceTypeFullyQualifiedFormat,
                                          classTypeFullyQualifiedFormat,
+                                         null,
                                          registrationLifetime,
                                          duplicateRegistrationStrategy,
                                          serviceTypeErrorMessageFormat,
                                          classTypeErrorMessageFormat);
+        }
+
+        private static RegistrationDatum AsKeyed(INamedTypeSymbol classSymbol, AttributeData registrationAttribute)
+        {
+            var nonKeyed = As(classSymbol, registrationAttribute);
+
+            var key = GetKeyFromAttribute(registrationAttribute);
+
+            return new RegistrationDatum(nonKeyed.ServiceType,
+                                         nonKeyed.ImplementationType,
+                                         key,
+                                         nonKeyed.Lifetime,
+                                         nonKeyed.DuplicateRegistrationStrategy,
+                                         nonKeyed.ServiceType,
+                                         nonKeyed.ImplementationType);
         }
 
         private static IEnumerable<RegistrationDatum> AsImplementedInterfaces(INamedTypeSymbol classSymbol,
@@ -221,10 +339,31 @@ public static class RegistrationDiagnostics
             {
                 yield return new RegistrationDatum(serviceTypeFullyQualifiedFormat,
                                                    classTypeFullyQualifiedFormat,
+                                                   null,
                                                    registrationLifetime,
                                                    duplicateRegistrationStrategy,
                                                    serviceTypeErrorMessageFormat,
                                                    classTypeErrorMessageFormat);
+            }
+        }
+
+        private static IEnumerable<RegistrationDatum> AsKeyedImplementedInterfaces(INamedTypeSymbol classSymbol,
+                                                                                   IEnumerable<(string fullyQualifiedFormat, string errorMessageFormat)> implementedInterfaceNames,
+                                                                                   AttributeData registrationAttribute)
+        {
+            var nonKeyeds = AsImplementedInterfaces(classSymbol, implementedInterfaceNames, registrationAttribute);
+
+            var key = GetKeyFromAttribute(registrationAttribute);
+
+            foreach (var nonKeyed in nonKeyeds)
+            {
+                yield return new RegistrationDatum(nonKeyed.ServiceType,
+                                                   nonKeyed.ImplementationType,
+                                                   key,
+                                                   nonKeyed.Lifetime,
+                                                   nonKeyed.DuplicateRegistrationStrategy,
+                                                   nonKeyed.ServiceType,
+                                                   nonKeyed.ImplementationType);
             }
         }
 
@@ -241,6 +380,7 @@ public static class RegistrationDiagnostics
 
             yield return new RegistrationDatum(classTypeFullyQualifiedFormat,
                                                classTypeFullyQualifiedFormat,
+                                               null,
                                                registrationLifetime,
                                                duplicateRegistrationStrategy,
                                                classTypeErrorMessageFormat,
@@ -250,10 +390,31 @@ public static class RegistrationDiagnostics
             {
                 yield return new RegistrationDatum(serviceTypeFullyQualifiedFormat,
                                                    classTypeFullyQualifiedFormat,
+                                                   null,
                                                    registrationLifetime,
                                                    duplicateRegistrationStrategy,
                                                    serviceTypeErrorMessageFormat,
                                                    classTypeErrorMessageFormat);
+            }
+        }
+
+        private static IEnumerable<RegistrationDatum> AsKeyedImplementedInterfacesAndSelf(INamedTypeSymbol classSymbol,
+                                                                                          IEnumerable<(string fullyQualifiedFormat, string errorMessageFormat)> implementedInterfaceNames,
+                                                                                          AttributeData registrationAttribute)
+        {
+            var nonKeyeds = AsImplementedInterfacesAndSelf(classSymbol, implementedInterfaceNames, registrationAttribute);
+
+            var key = GetKeyFromAttribute(registrationAttribute);
+
+            foreach (var nonKeyed in nonKeyeds)
+            {
+                yield return new RegistrationDatum(nonKeyed.ServiceType,
+                                                   nonKeyed.ImplementationType,
+                                                   key,
+                                                   nonKeyed.Lifetime,
+                                                   nonKeyed.DuplicateRegistrationStrategy,
+                                                   nonKeyed.ServiceType,
+                                                   nonKeyed.ImplementationType);
             }
         }
 
@@ -267,10 +428,26 @@ public static class RegistrationDiagnostics
 
             return new RegistrationDatum(serviceType,
                                          implementationType,
+                                         null,
                                          registrationLifetime,
                                          duplicateRegistrationStrategy,
                                          serviceType,
                                          implementationType);
+        }
+
+        private static RegistrationDatum AsKeyedOpenGeneric(INamedTypeSymbol classSymbol, AttributeData registrationAttribute)
+        {
+            var nonKeyed = AsOpenGeneric(classSymbol, registrationAttribute);
+
+            var key = GetKeyFromAttribute(registrationAttribute);
+
+            return new RegistrationDatum(nonKeyed.ServiceType,
+                                         nonKeyed.ImplementationType,
+                                         key,
+                                         nonKeyed.Lifetime,
+                                         nonKeyed.DuplicateRegistrationStrategy,
+                                         nonKeyed.ServiceType,
+                                         nonKeyed.ImplementationType);
         }
 
         private static (string? serviceType, string? implementationType) GetOpenGenericFromAttribute(AttributeData attribute)
@@ -364,6 +541,17 @@ public static class RegistrationDiagnostics
             return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("AsSelfAttribute");
         }
 
+        private static bool IsAsKeyedSelfAttribute(AttributeData attribute)
+        {
+            var attributeAttributeClass = attribute.AttributeClass;
+            if (attributeAttributeClass == null)
+            {
+                return false;
+            }
+
+            return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("AsKeyedSelfAttribute");
+        }
+
         private static bool IsAsGenericTypeAttribute(AttributeData attribute)
         {
             var attributeAttributeClass = attribute.AttributeClass;
@@ -380,6 +568,22 @@ public static class RegistrationDiagnostics
                                           .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingleton.AsAttribute");
         }
 
+        private static bool IsAsKeyedGenericTypeAttribute(AttributeData attribute)
+        {
+            var attributeAttributeClass = attribute.AttributeClass;
+            if (attributeAttributeClass == null)
+            {
+                return false;
+            }
+
+            return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                          .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransient.AsKeyedAttribute") ||
+                   attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                          .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScoped.AsKeyedAttribute") ||
+                   attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                          .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingleton.AsKeyedAttribute");
+        }
+
         private static bool IsAsImplementedInterfacesAttribute(AttributeData attribute)
         {
             var attributeAttributeClass = attribute.AttributeClass;
@@ -389,6 +593,17 @@ public static class RegistrationDiagnostics
             }
 
             return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("AsImplementedInterfacesAttribute");
+        }
+
+        private static bool IsAsKeyedImplementedInterfacesAttribute(AttributeData attribute)
+        {
+            var attributeAttributeClass = attribute.AttributeClass;
+            if (attributeAttributeClass == null)
+            {
+                return false;
+            }
+
+            return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("AsKeyedImplementedInterfacesAttribute");
         }
 
         private static bool IsAsImplementedInterfacesAndSelfAttribute(AttributeData attribute)
@@ -402,6 +617,17 @@ public static class RegistrationDiagnostics
             return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("AsImplementedInterfacesAndSelfAttribute");
         }
 
+        private static bool IsAsKeyedImplementedInterfacesAndSelfAttribute(AttributeData attribute)
+        {
+            var attributeAttributeClass = attribute.AttributeClass;
+            if (attributeAttributeClass == null)
+            {
+                return false;
+            }
+
+            return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("AsKeyedImplementedInterfacesAndSelfAttribute");
+        }
+
         private static bool IsAsOpenGenericAttribute(AttributeData attribute)
         {
             var attributeAttributeClass = attribute.AttributeClass;
@@ -411,6 +637,17 @@ public static class RegistrationDiagnostics
             }
 
             return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("AsOpenGenericAttribute");
+        }
+
+        private static bool IsAsKeyedOpenGenericAttribute(AttributeData attribute)
+        {
+            var attributeAttributeClass = attribute.AttributeClass;
+            if (attributeAttributeClass == null)
+            {
+                return false;
+            }
+
+            return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).EndsWith("AsKeyedOpenGenericAttribute");
         }
 
         private static RegistrationLifetime GetRegistrationLifetime(AttributeData attribute)
@@ -441,10 +678,16 @@ public static class RegistrationDiagnostics
                 return false;
             }
 
-            return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransient") &&
+            return (attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                          .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransient") &&
                    attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
                                           .Replace("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsTransient", string.Empty)
-                                          .Contains("Attribute");
+                                          .Contains("Attribute")) ||
+                   (attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                           .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsKeyedTransient") &&
+                    attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                           .Replace("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsKeyedTransient", string.Empty)
+                                           .Contains("Attribute"));
         }
 
         private static bool IsScopedAttribute(AttributeData attribute)
@@ -455,9 +698,16 @@ public static class RegistrationDiagnostics
                 return false;
             }
 
-            return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScoped") &&
-                   attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Replace("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScoped", string.Empty)
-                                          .Contains("Attribute");
+            return (attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                          .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScoped") &&
+                   attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                          .Replace("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsScoped", string.Empty)
+                                          .Contains("Attribute")) ||
+                   (attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                           .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsKeyedScoped") &&
+                    attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                           .Replace("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsKeyedScoped", string.Empty)
+                                           .Contains("Attribute"));
         }
 
         private static bool IsSingletonAttribute(AttributeData attribute)
@@ -468,10 +718,26 @@ public static class RegistrationDiagnostics
                 return false;
             }
 
-            return attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingleton") &&
+            return (attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                          .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingleton") &&
                    attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
                                           .Replace("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsSingleton", string.Empty)
-                                          .Contains("Attribute");
+                                          .Contains("Attribute")) ||
+                   (attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                           .StartsWith("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsKeyedSingleton") &&
+                    attributeAttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                                           .Replace("global::Futurum.Microsoft.Extensions.DependencyInjection.RegisterAsKeyedSingleton", string.Empty)
+                                           .Contains("Attribute"));
+        }
+
+        private static string? GetKeyFromAttribute(AttributeData attribute)
+        {
+            if (attribute.ConstructorArguments.Length == 1 && attribute.ConstructorArguments[0].Value is string key)
+            {
+                return key;
+            }
+
+            return null;
         }
     }
 }

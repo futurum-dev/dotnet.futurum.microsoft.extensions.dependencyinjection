@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 serviceCollection,
                 global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Describe(
                     typeof(global::Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1),
-                    typeof(global::Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1), 
+                    typeof(global::Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1),
                     global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped
                 )
             );
