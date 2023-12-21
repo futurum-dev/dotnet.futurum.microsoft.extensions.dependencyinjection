@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Futurum.Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionDescriptorExtensions
+public static partial class ServiceCollectionDescriptorExtensions
 {
     public static void TryAddEquatableKeyedScoped(this IServiceCollection collection, Type service, object? serviceKey, Type implementationType)
     {
@@ -30,24 +30,6 @@ public static class ServiceCollectionDescriptorExtensions
             var serviceKey = collection[index].ServiceKey;
             if (serviceKey != null && collection[index].ServiceType == descriptor.ServiceType && serviceKey.Equals(descriptor.ServiceKey))
                 return collection;
-        }
-
-        collection.Add(descriptor);
-
-        return collection;
-    }
-
-    public static IServiceCollection ReplaceEquatableKeyed(this IServiceCollection collection, ServiceDescriptor descriptor)
-    {
-        var count = collection.Count;
-        for (var index = 0; index < count; ++index)
-        {
-            var serviceKey = collection[index].ServiceKey;
-            if (serviceKey != null && collection[index].ServiceType == descriptor.ServiceType && serviceKey.Equals(descriptor.ServiceKey))
-            {
-                collection.RemoveAt(index);
-                break;
-            }
         }
 
         collection.Add(descriptor);

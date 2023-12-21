@@ -2,9 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Futurum.Microsoft.Extensions.DependencyInjection.Tests;
 
-public class ServiceCollectionDescriptorExtensionsTests
+public class ServiceCollectionDescriptorExtensionsReplaceEquatableKeyedTests
 {
-    public class TryAddEquatableKeyedScoped
+    public class ReplaceEquatableKeyedScoped
     {
         [Fact]
         public void check_registration()
@@ -12,22 +12,22 @@ public class ServiceCollectionDescriptorExtensionsTests
             var serviceCollection = new ServiceCollection();
 
             var serviceKey = "key";
-            serviceCollection.TryAddEquatableKeyedScoped(typeof(IService), serviceKey, typeof(Service1));
-            serviceCollection.TryAddEquatableKeyedScoped(typeof(IService), serviceKey, typeof(Service2));
+            serviceCollection.ReplaceEquatableKeyedScoped(typeof(IService), serviceKey, typeof(Service1));
+            serviceCollection.ReplaceEquatableKeyedScoped(typeof(IService), serviceKey, typeof(Service2));
 
             var serviceDescriptor = serviceCollection
                 .Where(x => x.IsKeyedService &&
                             x.ServiceKey.Equals(serviceKey) &&
-                            x.KeyedImplementationType == typeof(Service1));
+                            x.ServiceType == typeof(IService));
 
             serviceDescriptor.Count().Should().Be(1);
             serviceDescriptor.First().ServiceType.Should().Be(typeof(IService));
-            serviceDescriptor.First().KeyedImplementationType.Should().Be(typeof(Service1));
+            serviceDescriptor.First().KeyedImplementationType.Should().Be(typeof(Service2));
             serviceDescriptor.First().Lifetime.Should().Be(ServiceLifetime.Scoped);
         }
     }
 
-    public class TryAddEquatableKeyedSingleton
+    public class ReplaceEquatableKeyedSingleton
     {
         [Fact]
         public void check_registration()
@@ -35,22 +35,22 @@ public class ServiceCollectionDescriptorExtensionsTests
             var serviceCollection = new ServiceCollection();
 
             var serviceKey = "key";
-            serviceCollection.TryAddEquatableKeyedSingleton(typeof(IService), serviceKey, typeof(Service1));
-            serviceCollection.TryAddEquatableKeyedSingleton(typeof(IService), serviceKey, typeof(Service2));
+            serviceCollection.ReplaceEquatableKeyedSingleton(typeof(IService), serviceKey, typeof(Service1));
+            serviceCollection.ReplaceEquatableKeyedSingleton(typeof(IService), serviceKey, typeof(Service2));
 
             var serviceDescriptor = serviceCollection
                 .Where(x => x.IsKeyedService &&
                             x.ServiceKey.Equals(serviceKey) &&
-                            x.KeyedImplementationType == typeof(Service1));
+                            x.ServiceType == typeof(IService));
 
             serviceDescriptor.Count().Should().Be(1);
             serviceDescriptor.First().ServiceType.Should().Be(typeof(IService));
-            serviceDescriptor.First().KeyedImplementationType.Should().Be(typeof(Service1));
+            serviceDescriptor.First().KeyedImplementationType.Should().Be(typeof(Service2));
             serviceDescriptor.First().Lifetime.Should().Be(ServiceLifetime.Singleton);
         }
     }
 
-    public class TryAddEquatableKeyedTransient
+    public class ReplaceEquatableKeyedTransient
     {
         [Fact]
         public void check_registration()
@@ -58,17 +58,17 @@ public class ServiceCollectionDescriptorExtensionsTests
             var serviceCollection = new ServiceCollection();
 
             var serviceKey = "key";
-            serviceCollection.TryAddEquatableKeyedTransient(typeof(IService), serviceKey, typeof(Service1));
-            serviceCollection.TryAddEquatableKeyedTransient(typeof(IService), serviceKey, typeof(Service2));
+            serviceCollection.ReplaceEquatableKeyedTransient(typeof(IService), serviceKey, typeof(Service1));
+            serviceCollection.ReplaceEquatableKeyedTransient(typeof(IService), serviceKey, typeof(Service2));
 
             var serviceDescriptor = serviceCollection
                 .Where(x => x.IsKeyedService &&
                             x.ServiceKey.Equals(serviceKey) &&
-                            x.KeyedImplementationType == typeof(Service1));
+                            x.ServiceType == typeof(IService));
 
             serviceDescriptor.Count().Should().Be(1);
             serviceDescriptor.First().ServiceType.Should().Be(typeof(IService));
-            serviceDescriptor.First().KeyedImplementationType.Should().Be(typeof(Service1));
+            serviceDescriptor.First().KeyedImplementationType.Should().Be(typeof(Service2));
             serviceDescriptor.First().Lifetime.Should().Be(ServiceLifetime.Transient);
         }
     }
