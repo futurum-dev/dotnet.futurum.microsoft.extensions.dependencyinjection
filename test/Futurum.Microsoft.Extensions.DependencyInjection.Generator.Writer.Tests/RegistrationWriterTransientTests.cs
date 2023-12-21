@@ -15,6 +15,7 @@ public class RegistrationWriterTransientTests
         {
             new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
+                null,
                 RegistrationLifetime.Transient,
                 DuplicateRegistrationStrategy.Try,
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
@@ -33,6 +34,7 @@ public class RegistrationWriterTransientTests
         {
             new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
+                null,
                 RegistrationLifetime.Transient,
                 DuplicateRegistrationStrategy.Add,
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
@@ -51,6 +53,7 @@ public class RegistrationWriterTransientTests
         {
             new("Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.Service1",
+                null,
                 RegistrationLifetime.Transient,
                 DuplicateRegistrationStrategy.Replace,
                 "Futurum.Microsoft.Extensions.DependencyInjection.Generator.Tests.IService1",

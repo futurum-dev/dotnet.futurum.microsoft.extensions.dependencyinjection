@@ -1,18 +1,7 @@
 ﻿namespace Futurum.Microsoft.Extensions.DependencyInjection.Generator.Sample;
 
-public interface IService1
-{
-}
-
-public interface IService2
-{
-}
-
-public interface IService3
-{
-}
-
-public interface IService4
+[RegisterAsTransient]
+public class TransientService : IService1
 {
 }
 
@@ -36,6 +25,11 @@ public class TransientService_AsImplementedInterfacesAndSelf : IService1
 {
 }
 
+[RegisterAsScoped]
+public class ScopedService : IService2
+{
+}
+
 [RegisterAsScoped.AsSelf]
 public class ScopedService_AsSelf : IService2
 {
@@ -53,6 +47,11 @@ public class ScopedService_AsImplementedInterfaces : IService2
 
 [RegisterAsScoped.AsImplementedInterfacesAndSelf]
 public class ScopedService_AsImplementedInterfacesAndSelf : IService2
+{
+}
+
+[RegisterAsSingleton]
+public class SingletonService : IService3
 {
 }
 
@@ -93,10 +92,6 @@ public class SingletonService_Add : IService1
 
 [RegisterAsScoped.AsImplementedInterfaces(DuplicateRegistrationStrategy = DuplicateRegistrationStrategy.Add)]
 public class Service_AsImplementedInterfaces : IService1, IService2
-{
-}
-
-public interface IService_OpenGeneric<T>
 {
 }
 

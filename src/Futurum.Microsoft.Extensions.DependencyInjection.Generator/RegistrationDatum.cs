@@ -6,6 +6,7 @@ public sealed class RegistrationDatum : IEquatable<RegistrationDatum>
 {
     public RegistrationDatum(string serviceType,
                              string implementationType,
+                             string? key,
                              RegistrationLifetime lifetime,
                              DuplicateRegistrationStrategy duplicateRegistrationStrategy,
                              string debugServiceType,
@@ -13,6 +14,7 @@ public sealed class RegistrationDatum : IEquatable<RegistrationDatum>
     {
         ServiceType = serviceType;
         ImplementationType = implementationType;
+        Key = key;
         Lifetime = lifetime;
         DuplicateRegistrationStrategy = duplicateRegistrationStrategy;
         DebugServiceType = debugServiceType;
@@ -22,6 +24,7 @@ public sealed class RegistrationDatum : IEquatable<RegistrationDatum>
     public string ServiceType { get; }
 
     public string ImplementationType { get; }
+    public string? Key { get; }
 
     public RegistrationLifetime Lifetime { get; }
 

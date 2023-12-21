@@ -14,7 +14,7 @@ public class ModuleTests
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddDependencyInjectionForFuturumMicrosoftExtensionsDependencyInjectionGeneratorTests();
 
-            var serviceDescriptor = serviceCollection.Where(x => x.ImplementationType == typeof(Service));
+            var serviceDescriptor = serviceCollection.Where(x => x.ServiceKey == null && x.ImplementationType == typeof(Service));
 
             serviceDescriptor.Count().Should().Be(1);
             serviceDescriptor.First().ServiceType.Should().Be(typeof(IService1));
@@ -47,7 +47,7 @@ public class ModuleTests
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddDependencyInjectionForFuturumMicrosoftExtensionsDependencyInjectionGeneratorTests();
 
-            var serviceDescriptor = serviceCollection.Where(x => x.ImplementationType == typeof(Service));
+            var serviceDescriptor = serviceCollection.Where(x => x.ServiceKey == null && x.ImplementationType == typeof(Service));
 
             serviceDescriptor.Count().Should().Be(1);
             serviceDescriptor.First().ServiceType.Should().Be(typeof(IService1));

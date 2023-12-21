@@ -9,6 +9,7 @@ A dotnet library that extends Microsoft.Extensions.DependencyInjection by adding
 
 - [x] [Easy setup](#easy-setup)
 - [x] Autodiscovery of DependencyInjection registrations, based on [attributes](#attribute-based-registration) and Source Generators
+- [x] Support for *keyed* registrations
 - [x] Autodiscovery of DependencyInjection modules, based on [attributes](#attribute-based-module) and Source Generators
 - [x] Autodiscovery of DependencyInjection startables, based on [attributes](#attribute-based-startable) and Source Generators
 - [x] [Roslyn Analysers](#roslyn-analysers) to help build your registrations, modules and startables, using best practices
@@ -36,11 +37,17 @@ You can register services using attributes.
 
 The attributes have been created is a discoverable way. They take the following form:
 - [RegisterAs{Lifetime}](#registeraslifetime-attribute)
+- [RegisterAsKeyed{Lifetime}](#registeraskeyedlifetime-attribute)
 - [RegisterAs{Lifetime}.AsSelf](#registeraslifetimeasself-attribute)
+- [RegisterAs{Lifetime}.AsKeyedSelf](#registeraslifetimeaskeyedself-attribute)
 - [RegisterAs{Lifetime}.As{ServiceType}](#registeraslifetimeasservicetype-attribute)
+- [RegisterAs{Lifetime}.AsKeyed{ServiceType}](#registeraslifetimeaskeyedservicetype-attribute)
 - [RegisterAs{Lifetime}.AsImplementedInterfaces](#registeraslifetimeasimplementedinterfaces-attribute)
+- [RegisterAs{Lifetime}.AsKeyedImplementedInterfaces](#registeraslifetimeaskeyedimplementedinterfaces-attribute)
 - [RegisterAs{Lifetime}.AsImplementedInterfacesAndSelf](#registeraslifetimeasimplementedinterfacesandself-attribute)
+- [RegisterAs{Lifetime}.AsKeyedImplementedInterfacesAndSelf](#registeraslifetimeaskeyedimplementedinterfacesandself-attribute)
 - [RegisterAs{Lifetime}.AsOpenGeneric](#registeraslifetimeasopengeneric-attribute)
+- [RegisterAs{Lifetime}.AsKeyedOpenGeneric](#registeraslifetimeaskeyedopengeneric-attribute)
 
 There are 3 lifetimes available:
 - Singleton
@@ -78,6 +85,35 @@ public class Service : IService
 }
 ```
 
+### RegisterAsKeyed{Lifetime} attribute
+This will register the class against the 1 interface the class implements, for the specified lifetime, with the *service key*.
+
+**NOTE** - There is a Roslyn Analyser that will warn you if you use this attribute and the class does not implement exactly 1 interface.
+
+e.g. This will register *Service* against *IService*, with a *Singleton* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsKeyedSingleton("service-key")]
+public class Service : IService
+{
+}
+```
+
+e.g. This will register *Service* against *IService*, with a *Scoped* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsKeyedScoped("service-key")]
+public class Service : IService
+{
+}
+```
+
+e.g. This will register *Service* against *IService*, with a *Transient* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsKeyedTransient("service-key")]
+public class Service : IService
+{
+}
+```
+
 ### RegisterAs{Lifetime}.AsSelf attribute
 This will register the class against itself, for the specified lifetime.
 
@@ -100,6 +136,33 @@ public class Service
 e.g. This will register *Service* against *Service* with a *Transient* lifetime.
 ```csharp
 [RegisterAsTransient.AsSelf]
+public class Service
+{
+}
+```
+
+### RegisterAs{Lifetime}.AsKeyedSelf attribute
+This will register the class against itself, for the specified lifetime, for the specified lifetime, with the *service key*.
+
+e.g. This will register *Service* against *Service*, with a *Singleton* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsSingleton.AsKeyedSelf("service-key")]
+public class Service
+{
+}
+```
+
+e.g. This will register *Service* against *Service*, with a *Scoped* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsScoped.AsKeyedSelf("service-key")]
+public class Service
+{
+}
+```
+
+e.g. This will register *Service* against *Service*, with a *Transient* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsTransient.AsKeyedSelf("service-key")]
 public class Service
 {
 }
@@ -134,6 +197,35 @@ public class Service : IService1, IService2
 }
 ```
 
+### RegisterAs{Lifetime}.AsKeyed{ServiceType} attribute
+This will register the class against the specified interface, for the specified lifetime, with the *service key*.
+
+**NOTE** - There is a Roslyn Analyser that will warn you if you use the class does not implement the specified interface.
+
+e.g. This will register *Service* against *IService1*, with a *Singleton* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsSingleton.AsKeyed<IService2>("service-key")]
+public class Service : IService1, IService2
+{
+}
+```
+
+e.g. This will register *Service* against *IService1*, with a *Scoped* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsScoped.AsKeyed<IService2>("service-key")]
+public class Service : IService1, IService2
+{
+}
+```
+
+e.g. This will register *Service* against *IService1*, with a *Transient* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsTransient.AsKeyed<IService2>("service-key")]
+public class Service : IService1, IService2
+{
+}
+```
+
 ### RegisterAs{Lifetime}.AsImplementedInterfaces attribute
 This will register the class against all the interfaces it implements directly, for the specified lifetime.
 
@@ -156,6 +248,33 @@ public class Service : IService1, IService2
 e.g. This will register *Service* against *IService1* and *IService2* with a *Transient* lifetime.
 ```csharp
 [RegisterAsTransient.AsImplementedInterfaces]
+public class Service : IService1, IService2
+{
+}
+```
+
+### RegisterAs{Lifetime}.AsKeyedImplementedInterfaces attribute
+This will register the class against all the interfaces it implements directly, for the specified lifetime, with the *service key*.
+
+e.g. This will register *Service* against *IService1* and *IService2*, with a *Singleton* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsSingleton.AsKeyedImplementedInterfaces("service-key")]
+public class Service : IService1, IService2
+{
+}
+```
+
+e.g. This will register *Service* against *IService1* and *IService2*, with a *Scoped* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsScoped.AsKeyedImplementedInterfaces("service-key")]
+public class Service : IService1, IService2
+{
+}
+```
+
+e.g. This will register *Service* against *IService1* and *IService2*, with a *Transient* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsTransient.AsKeyedImplementedInterfaces("service-key")]
 public class Service : IService1, IService2
 {
 }
@@ -188,6 +307,33 @@ public class Service : IService1, IService2
 }
 ```
 
+### RegisterAs{Lifetime}.AsKeyedImplementedInterfacesAndSelf attribute
+This will register the class against all the interfaces it implements directly and itself, for the specified lifetime, with the *service key*.
+
+e.g. This will register *Service* against *Service*, *IService1* and *IService2*, with a *Singleton* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsSingleton.AsKeyedImplementedInterfacesAndSelf("service-key")]
+public class Service : IService1, IService2
+{
+}
+```
+
+e.g. This will register *Service* against *Service*, *IService1* and *IService2*, with a *Scoped* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsScoped.AsKeyedImplementedInterfacesAndSelf("service-key")]
+public class Service : IService1, IService2
+{
+}
+```
+
+e.g. This will register *Service* against *Service*, *IService1* and *IService2*, with a *Transient* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsTransient.AsKeyedImplementedInterfacesAndSelf("service-key")]
+public class Service : IService1, IService2
+{
+}
+```
+
 ### RegisterAs{Lifetime}.AsOpenGeneric attribute
 This will register the an open generic class against an open generic interface, for the specified lifetime.
 
@@ -210,6 +356,33 @@ public class Service<T> : IService<T>
 e.g. This will register *Service&lt;T&gt;* against *IService&lt;T&gt;* with a *Transient* lifetime.
 ```csharp
 [RegisterAsTransient.AsOpenGeneric(ImplementationType = typeof(Service<>), ServiceType = typeof(IService<>))]
+public class Service<T> : IService<T>
+{
+}
+```
+
+### RegisterAs{Lifetime}.AsKeyedOpenGeneric attribute
+This will register the an open generic class against an open generic interface, for the specified lifetime, with the *service key*.
+
+e.g. This will register *Service&lt;T&gt;* against *IService&lt;T&gt;*, with a *Singleton* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsSingleton.AsKeyedOpenGeneric("service-key", ImplementationType = typeof(Service<>), ServiceType = typeof(IService<>))]
+public class Service<T> : IService<T>
+{
+}
+```
+
+e.g. This will register *Service&lt;T&gt;* against *IService&lt;T&gt;*, with a *Scoped* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsScoped.AsKeyedOpenGeneric("service-key", ImplementationType = typeof(Service<>), ServiceType = typeof(IService<>))]
+public class Service<T> : IService<T>
+{
+}
+```
+
+e.g. This will register *Service&lt;T&gt;* against *IService&lt;T&gt;*, with a *Transient* lifetime, with a *"service-key"* service key.
+```csharp
+[RegisterAsTransient.AsKeyedOpenGeneric("service-key", ImplementationType = typeof(Service<>), ServiceType = typeof(IService<>))]
 public class Service<T> : IService<T>
 {
 }

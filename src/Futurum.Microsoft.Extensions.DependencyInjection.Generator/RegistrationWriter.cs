@@ -21,10 +21,7 @@ public static class RegistrationWriter
 
     private static void WriteRegistration(IndentedStringBuilder codeBuilder, RegistrationDatum registrationDatum)
     {
-        var serviceCollectionRegistrationMethod = GetServiceCollectionRegistrationMethod(registrationDatum.DuplicateRegistrationStrategy);
-
-        // if (registrationDatum.ServiceType.IsNullOrWhiteSpace())
-        //     return;
+        var serviceCollectionRegistrationMethod = GetServiceCollectionRegistrationMethod(registrationDatum.Key, registrationDatum.DuplicateRegistrationStrategy);
 
         WriteRegistration(codeBuilder, registrationDatum, serviceCollectionRegistrationMethod, registrationDatum.ServiceType);
     }
@@ -32,41 +29,60 @@ public static class RegistrationWriter
     private static void WriteRegistration(IndentedStringBuilder codeBuilder, RegistrationDatum registrationDatum, string serviceCollectionRegistrationMethod, string serviceType)
     {
         codeBuilder
-            .Append("global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.")
             .Append(serviceCollectionRegistrationMethod)
             .AppendLine("(")
             .IncrementIndent()
             .AppendLine("serviceCollection,")
-            .AppendLine("global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Describe(")
-            .IncrementIndent()
+            .Append("global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor.");
+
+        if (!string.IsNullOrEmpty(registrationDatum.Key))
+        {
+            codeBuilder
+                .Append("DescribeKeyed");
+        }
+        else
+        {
+            codeBuilder
+                .Append("Describe");
+        }
+
+        codeBuilder
+            .AppendLine("(")
+            .IncrementIndent();
+
+        // Service type
+        codeBuilder
             .Append("typeof(")
             .AppendIf("global::", !serviceType.StartsWith("global::"))
             .Append(serviceType)
             .AppendLine("),");
 
-        if (registrationDatum.ImplementationType.HasValue())
+        // Service key
+        if (!string.IsNullOrEmpty(registrationDatum.Key))
         {
             codeBuilder
-                .Append("typeof(")
-                .AppendIf("global::", !registrationDatum.ImplementationType.StartsWith("global::"))
-                .Append(registrationDatum.ImplementationType)
-                .Append(')');
-        }
-        else
-        {
-            codeBuilder
-                .Append("typeof(")
-                .AppendIf("global::", !serviceType.StartsWith("global::"))
-                .Append(serviceType)
-                .Append(')');
+                .Append("\"")
+                .Append(registrationDatum.Key)
+                .Append("\"")
+                .AppendLine(",");
         }
 
+        // Implementation type
+        codeBuilder
+            .Append("typeof(")
+            .AppendIf("global::", !registrationDatum.ImplementationType.StartsWith("global::"))
+            .Append(registrationDatum.ImplementationType)
+            .Append(')');
+
+        // Lifetime
         var lifetime = GetMicrosoftExtensionsDependencyInjectionServiceLifetime(registrationDatum.Lifetime);
 
         codeBuilder
-            .AppendLine(", ")
+            .AppendLine(",")
             .Append("global::")
-            .Append(lifetime)
+            .Append(lifetime);
+
+        codeBuilder
             .AppendLine()
             .DecrementIndent()
             .AppendLine(")")
@@ -75,14 +91,27 @@ public static class RegistrationWriter
             .AppendLine();
     }
 
-    private static string GetServiceCollectionRegistrationMethod(DuplicateRegistrationStrategy duplicateRegistrationStrategy) =>
-        duplicateRegistrationStrategy switch
+    private static string GetServiceCollectionRegistrationMethod(string? serviceKey, DuplicateRegistrationStrategy duplicateRegistrationStrategy)
+    {
+        if (serviceKey != null)
         {
-            DuplicateRegistrationStrategy.Try     => "TryAdd",
-            DuplicateRegistrationStrategy.Replace => "Replace",
-            DuplicateRegistrationStrategy.Add     => "Add",
-            _                                     => "TryAdd"
+            return duplicateRegistrationStrategy switch
+            {
+                DuplicateRegistrationStrategy.Try     => "global::Futurum.Microsoft.Extensions.DependencyInjection.ServiceCollectionDescriptorExtensions.TryAddEquatableKeyed",
+                DuplicateRegistrationStrategy.Replace => "global::Futurum.Microsoft.Extensions.DependencyInjection.ServiceCollectionDescriptorExtensions.ReplaceEquatableKeyed",
+                DuplicateRegistrationStrategy.Add     => "global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.Add",
+                _                                     => "global::Futurum.Microsoft.Extensions.DependencyInjection.ServiceCollectionDescriptorExtensions.TryAddEquatableKeyed"
+            };
+        }
+
+        return duplicateRegistrationStrategy switch
+        {
+            DuplicateRegistrationStrategy.Try     => "global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAdd",
+            DuplicateRegistrationStrategy.Replace => "global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.Replace",
+            DuplicateRegistrationStrategy.Add     => "global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.Add",
+            _                                     => "global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAdd"
         };
+    }
 
     private static string GetMicrosoftExtensionsDependencyInjectionServiceLifetime(RegistrationLifetime registrationLifetime) =>
         registrationLifetime switch
